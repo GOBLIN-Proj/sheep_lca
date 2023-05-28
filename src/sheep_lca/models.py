@@ -7,6 +7,7 @@ import copy
 
 class DynamicData(object):
     def __init__(self, data, defaults={}):
+
         # Set the defaults first
         for variable, value in defaults.items():
             setattr(self, variable, value)
@@ -18,9 +19,10 @@ class DynamicData(object):
 
 class AnimalCategory(DynamicData):
     def __init__(self, data):
+
         defaults = {
             "pop": 0,
-            "daily_milk": 0,
+            "wool": 0,
             "weight": 0,
             "forage": "average",
             "grazing": "pasture",
@@ -33,10 +35,11 @@ class AnimalCategory(DynamicData):
             "daily_spreading": "none",
             "n_sold": 0,
             "n_bought": 0,
+            "meat_price_kg": 0,
+            "wool_price_kg": 0,
         }
 
         super(AnimalCategory, self).__init__(data, defaults)
-
 
 class AnimalCollection(DynamicData):
     def __init__(self, data):
@@ -56,294 +59,82 @@ class Farm(DynamicData):
 class Animal_Features(object):
     def __init__(self, data):
         self.data_frame = data
-
         self.animal_features = {}
 
         for _, row in self.data_frame.iterrows():
-            birth_weight = row.get("birth_weight")
-            mature_weight_bulls = row.get("mature_weight_bulls")
-            mature_weight_dairy_cows = row.get("mature_weight_dairy_cows")
-            mature_weight_suckler_cows = row.get("mature_weight_suckler_cows")
-            dairy_cows_weight_gain = row.get("dairy_cows_weight_gain")
-            suckler_cows_weight_gain = row.get("suckler_cows_weight_gain")
-            DxD_calves_f_weight_gain = row.get("DxD_calves_f_weight_gain")
-            DxD_calves_m_weight_gain = row.get("DxD_calves_m_weight_gain")
-            DxB_calves_f_weight_gain = row.get("DxB_calves_f_weight_gain")
-            DxB_calves_m_weight_gain = row.get("DxB_calves_f_weight_gain")
-            BxB_calves_m_weight_gain = row.get("BxB_calves_m_weight_gain")
-            BxB_calves_f_weight_gain = row.get("BxB_calves_f_weight_gain")
-            DxD_heifers_less_2_yr_weight_gain = row.get(
-                "DxD_heifers_less_2_yr_weight_gain"
+
+            mature_weight_male = row.get("mature_weight_male")
+            mature_weight_female = row.get("mature_weight_female")
+            ewe_weight_after_weaning = row.get("ewe_weight_after_weaning")
+            lamb_less_1_yr_weight_after_weaning = row.get(
+                "lamb_less_1_yr_weight_after_weaning"
             )
-            DxD_steers_less_2_yr_weight_gain = row.get(
-                "DxD_steers_less_2_yr_weight_gain"
+            lamb_more_1_yr_weight_after_weaning = row.get(
+                "lamb_more_1_yr_weight_after_weaning"
             )
-            DxB_heifers_less_2_yr_weight_gain = row.get(
-                "DxB_heifers_less_2_yr_weight_gain"
-            )
-            DxB_steers_less_2_yr_weight_gain = row.get(
-                "DxB_steers_less_2_yr_weight_gain"
-            )
-            BxB_heifers_less_2_yr_weight_gain = row.get(
-                "BxB_heifers_less_2_yr_weight_gain"
-            )
-            BxB_steers_less_2_yr_weight_gain = row.get(
-                "BxB_steers_less_2_yr_weight_gain"
-            )
-            DxD_heifers_more_2_yr_weight_gain = row.get(
-                "DxD_heifers_more_2_yr_weight_gain"
-            )
-            DxD_steers_more_2_yr_weight_gain = row.get(
-                "DxD_steers_more_2_yr_weight_gain"
-            )
-            DxB_heifers_more_2_yr_weight_gain = row.get(
-                "DxB_heifers_more_2_yr_weight_gain"
-            )
-            DxB_steers_more_2_yr_weight_gain = row.get(
-                "DxB_steers_more_2_yr_weight_gain"
-            )
-            BxB_heifers_more_2_yr_weight_gain = row.get(
-                "BxB_heifers_more_2_yr_weight_gain"
-            )
-            BxB_steers_more_2_yr_weight_gain = row.get(
-                "BxB_steers_more_2_yr_weight_gain"
-            )
-            bulls_weight_gain = row.get("bulls_weight_gain")
-            dairy_cows_n_retention = row.get("dairy_cows_n_retention")
-            suckler_cows_n_retention = row.get("suckler_cows_n_retention")
-            DxD_calves_f_n_retention = row.get("DxD_calves_f_n_retention")
-            DxD_calves_m_n_retention = row.get("DxD_calves_m_n_retention")
-            DxB_calves_f_n_retention = row.get("DxB_calves_f_n_retention")
-            DxB_calves_m_n_retention = row.get("DxB_calves_f_n_retention")
-            BxB_calves_m_n_retention = row.get("BxB_calves_m_n_retention")
-            BxB_calves_f_n_retention = row.get("BxB_calves_f_n_retention")
-            DxD_heifers_less_2_yr_n_retention = row.get(
-                "DxD_heifers_less_2_yr_n_retention"
-            )
-            DxD_steers_less_2_yr_n_retention = row.get(
-                "DxD_steers_less_2_yr_n_retention"
-            )
-            DxB_heifers_less_2_yr_n_retention = row.get(
-                "DxB_heifers_less_2_yr_n_retention"
-            )
-            DxB_steers_less_2_yr_n_retention = row.get(
-                "DxB_steers_less_2_yr_n_retention"
-            )
-            BxB_heifers_less_2_yr_n_retention = row.get(
-                "BxB_heifers_less_2_yr_n_retention"
-            )
-            BxB_steers_less_2_yr_n_retention = row.get(
-                "BxB_steers_less_2_yr_n_retention"
-            )
-            DxD_heifers_more_2_yr_n_retention = row.get(
-                "DxD_heifers_more_2_yr_n_retention"
-            )
-            DxD_steers_more_2_yr_n_retention = row.get(
-                "DxD_steers_more_2_yr_n_retention"
-            )
-            DxB_heifers_more_2_yr_n_retention = row.get(
-                "DxB_heifers_more_2_yr_n_retention"
-            )
-            DxB_steers_more_2_yr_n_retention = row.get(
-                "DxB_steers_more_2_yr_n_retention"
-            )
-            BxB_heifers_more_2_yr_n_retention = row.get(
-                "BxB_heifers_more_2_yr_n_retention"
-            )
-            BxB_steers_more_2_yr_n_retention = row.get(
-                "BxB_steers_more_2_yr_n_retention"
-            )
-            bulls_n_retention = row.get("bulls_n_retention")
+            lamb_weight_gain = row.get("lamb_weight_gain")
+            ram_weight_after_weaning = row.get("ram_weight_after_weaning")
+            ewe_weight_1_year_old = row.get("ewe_weight_1_year_old")
+            lamb_less_1_yr_weight = row.get("lamb_less_1_yr_weight")
+            lamb_more_1_yr_weight = row.get("lamb_more_1_yr_weight")
+            lamb_male_more_1_year_old = row.get("lamb_male_more_1_year_old")
+            ram_weight_1_year_old = row.get("ram_weight_1_year_old")
+            lamb_weight_at_birth = row.get("lamb_weight_at_birth")
 
             self.animal_features = {
-                "birth_weight": birth_weight,
-                "mature_weight_bulls": mature_weight_bulls,
-                "mature_weight_dairy_cows": mature_weight_dairy_cows,
-                "mature_weight_suckler_cows": mature_weight_suckler_cows,
-                "dairy_cows_weight_gain": dairy_cows_weight_gain,
-                "suckler_cows_weight_gain": suckler_cows_weight_gain,
-                "DxD_calves_f_weight_gain": DxD_calves_f_weight_gain,
-                "DxD_calves_m_weight_gain": DxD_calves_m_weight_gain,
-                "DxB_calves_f_weight_gain": DxB_calves_f_weight_gain,
-                "DxB_calves_m_weight_gain": DxB_calves_m_weight_gain,
-                "BxB_calves_m_weight_gain": BxB_calves_m_weight_gain,
-                "BxB_calves_f_weight_gain": BxB_calves_f_weight_gain,
-                "DxD_heifers_less_2_yr_weight_gain": DxD_heifers_less_2_yr_weight_gain,
-                "DxD_steers_less_2_yr_weight_gain": DxD_steers_less_2_yr_weight_gain,
-                "DxB_heifers_less_2_yr_weight_gain": DxB_heifers_less_2_yr_weight_gain,
-                "DxB_steers_less_2_yr_weight_gain": DxB_steers_less_2_yr_weight_gain,
-                "BxB_heifers_less_2_yr_weight_gain": BxB_heifers_less_2_yr_weight_gain,
-                "BxB_steers_less_2_yr_weight_gain": BxB_steers_less_2_yr_weight_gain,
-                "DxD_heifers_more_2_yr_weight_gain": DxD_heifers_more_2_yr_weight_gain,
-                "DxD_steers_more_2_yr_weight_gain": DxD_steers_more_2_yr_weight_gain,
-                "DxB_heifers_more_2_yr_weight_gain": DxB_heifers_more_2_yr_weight_gain,
-                "DxB_steers_more_2_yr_weight_gain": DxB_steers_more_2_yr_weight_gain,
-                "BxB_heifers_more_2_yr_weight_gain": BxB_heifers_more_2_yr_weight_gain,
-                "BxB_steers_more_2_yr_weight_gain": BxB_steers_more_2_yr_weight_gain,
-                "bulls_weight_gain": bulls_weight_gain,
-                "dairy_cows_n_retention": dairy_cows_n_retention,
-                "suckler_cows_n_retention": suckler_cows_n_retention,
-                "DxD_calves_f_n_retention": DxD_calves_f_n_retention,
-                "DxD_calves_m_n_retention": DxD_calves_m_n_retention,
-                "DxB_calves_f_n_retention": DxB_calves_f_n_retention,
-                "DxB_calves_m_n_retention": DxB_calves_m_n_retention,
-                "BxB_calves_m_n_retention": BxB_calves_m_n_retention,
-                "BxB_calves_f_n_retention": BxB_calves_f_n_retention,
-                "DxD_heifers_less_2_yr_n_retention": DxD_heifers_less_2_yr_n_retention,
-                "DxD_steers_less_2_yr_n_retention": DxD_steers_less_2_yr_n_retention,
-                "DxB_heifers_less_2_yr_n_retention": DxB_heifers_less_2_yr_n_retention,
-                "DxB_steers_less_2_yr_n_retention": DxB_steers_less_2_yr_n_retention,
-                "BxB_heifers_less_2_yr_n_retention": BxB_heifers_less_2_yr_n_retention,
-                "BxB_steers_less_2_yr_n_retention": BxB_steers_less_2_yr_n_retention,
-                "DxD_heifers_more_2_yr_n_retention": DxD_heifers_more_2_yr_n_retention,
-                "DxD_steers_more_2_yr_n_retention": DxD_steers_more_2_yr_n_retention,
-                "DxB_heifers_more_2_yr_n_retention": DxB_heifers_more_2_yr_n_retention,
-                "DxB_steers_more_2_yr_n_retention": DxB_steers_more_2_yr_n_retention,
-                "BxB_heifers_more_2_yr_n_retention": BxB_heifers_more_2_yr_n_retention,
-                "BxB_steers_more_2_yr_n_retention": BxB_steers_more_2_yr_n_retention,
-                "bulls_n_retention": bulls_n_retention,
+                "mature_weight_male": mature_weight_male,
+                "mature_weight_female": mature_weight_female,
+                "ewe_weight_after_weaning": ewe_weight_after_weaning,
+                "lamb_less_1_yr_weight_after_weaning": lamb_less_1_yr_weight_after_weaning,
+                "lamb_more_1_yr_weight_after_weaning": lamb_more_1_yr_weight_after_weaning,
+                "lamb_weight_gain": lamb_weight_gain,
+                "ram_weight_after_weaning": ram_weight_after_weaning,
+                "ewe_weight_1_year_old": ewe_weight_1_year_old,
+                "lamb_less_1_yr_weight": lamb_less_1_yr_weight,
+                "lamb_more_1_yr_weight": lamb_more_1_yr_weight,
+                "lamb_male_more_1_year_old": lamb_male_more_1_year_old,
+                "ram_weight_1_year_old": ram_weight_1_year_old,
+                "lamb_weight_at_birth": lamb_weight_at_birth,
             }
 
-    def get_birth_weight(self):
-        return self.animal_features.get("birth_weight")
+    def get_mature_weight_male(self):
+        return self.animal_features.get("mature_weight_male")
 
-    def get_mature_weight_bulls(self):
-        return self.animal_features.get("mature_weight_bulls")
+    def get_mature_weight_female(self):
+        return self.animal_features.get("mature_weight_female")
 
-    def get_mature_weight_dairy_cows(self):
-        return self.animal_features.get("mature_weight_dairy_cows")
+    def get_ewe_weight_after_weaning(self):
+        return self.animal_features.get("ewe_weight_after_weaning")
 
-    def get_mature_weight_suckler_cows(self):
-        return self.animal_features.get("mature_weight_suckler_cows")
+    def get_lamb_less_1_yr_weight_after_weaning(self):
+        return self.animal_features.get("lamb_less_1_yr_weight_after_weaning")
 
-    def get_dairy_cows_weight_gain(self):
-        return self.animal_features.get("dairy_cows_weight_gain")
+    def get_lamb_more_1_yr_weight_after_weaning(self):
+        return self.animal_features.get("lamb_more_1_yr_weight_after_weaning")
 
-    def get_suckler_cows_weight_gain(self):
-        return self.animal_features.get("suckler_cows_weight_gain")
+    def get_lamb_weight_gain(self):
+        return self.animal_features.get("lamb_weight_gain")
 
-    def get_DxD_calves_m_weight_gain(self):
-        return self.animal_features.get("DxD_calves_m_weight_gain")
+    def get_ram_weight_after_weaning(self):
+        return self.animal_features.get("ram_weight_after_weaning")
 
-    def get_DxD_calves_f_weight_gain(self):
-        return self.animal_features.get("DxD_calves_f_weight_gain")
+    def get_ewe_weight_1_year_old(self):
+        return self.animal_features.get("ewe_weight_1_year_old")
 
-    def get_DxB_calves_m_weight_gain(self):
-        return self.animal_features.get("DxB_calves_m_weight_gain")
+    def get_lamb_less_1_yr_weight(self):
+        return self.animal_features.get("lamb_less_1_yr_weight")
 
-    def get_DxB_calves_f_weight_gain(self):
-        return self.animal_features.get("DxB_calves_f_weight_gain")
+    def get_lamb_more_1_yr_weight(self):
+        return self.animal_features.get("lamb_more_1_yr_weight")
 
-    def get_BxB_calves_m_weight_gain(self):
-        return self.animal_features.get("BxB_calves_m_weight_gain")
+    def get_lamb_male_more_1_year_old(self):
+        return self.animal_features.get("lamb_male_more_1_year_old")
 
-    def get_BxB_calves_f_weight_gain(self):
-        return self.animal_features.get("BxB_calves_f_weight_gain")
+    def get_ram_weight_1_year_old(self):
+        return self.animal_features.get("ram_weight_1_year_old")
 
-    def get_DxD_heifers_less_2_yr_weight_gain(self):
-        return self.animal_features.get("DxD_heifers_less_2_yr_weight_gain")
-
-    def get_DxD_steers_less_2_yr_weight_gain(self):
-        return self.animal_features.get("DxD_steers_less_2_yr_weight_gain")
-
-    def get_DxB_heifers_less_2_yr_weight_gain(self):
-        return self.animal_features.get("DxB_heifers_less_2_yr_weight_gain")
-
-    def get_DxB_steers_less_2_yr_weight_gain(self):
-        return self.animal_features.get("DxB_steers_less_2_yr_weight_gain")
-
-    def get_BxB_heifers_less_2_yr_weight_gain(self):
-        return self.animal_features.get("BxB_heifers_less_2_yr_weight_gain")
-
-    def get_BxB_steers_less_2_yr_weight_gain(self):
-        return self.animal_features.get("BxB_steers_less_2_yr_weight_gain")
-
-    def get_DxD_heifers_more_2_yr_weight_gain(self):
-        return self.animal_features.get("DxD_heifers_more_2_yr_weight_gain")
-
-    def get_DxD_steers_more_2_yr_weight_gain(self):
-        return self.animal_features.get("DxD_steers_more_2_yr_weight_gain")
-
-    def get_DxB_heifers_more_2_yr_weight_gain(self):
-        return self.animal_features.get("DxB_heifers_more_2_yr_weight_gain")
-
-    def get_DxB_steers_more_2_yr_weight_gain(self):
-        return self.animal_features.get("DxB_steers_more_2_yr_weight_gain")
-
-    def get_BxB_heifers_more_2_yr_weight_gain(self):
-        return self.animal_features.get("BxB_heifers_more_2_yr_weight_gain")
-
-    def get_BxB_steers_more_2_yr_weight_gain(self):
-        return self.animal_features.get("BxB_steers_more_2_yr_weight_gain")
-
-    def get_bulls_weight_gain(self):
-        return self.animal_features.get("bulls_weight_gain")
-
-    def get_dairy_cows_n_retention(self):
-        return self.animal_features.get("dairy_cows_n_retention")
-
-    def get_suckler_cows_n_retention(self):
-        return self.animal_features.get("suckler_cows_n_retention")
-
-    def get_DxD_calves_m_n_retention(self):
-        return self.animal_features.get("DxD_calves_m_n_retention")
-
-    def get_DxD_calves_f_n_retention(self):
-        return self.animal_features.get("DxD_calves_f_n_retention")
-
-    def get_DxB_calves_m_n_retention(self):
-        return self.animal_features.get("DxB_calves_m_n_retention")
-
-    def get_DxB_calves_f_n_retention(self):
-        return self.animal_features.get("DxB_calves_f_n_retention")
-
-    def get_BxB_calves_m_n_retention(self):
-        return self.animal_features.get("BxB_calves_m_n_retention")
-
-    def get_BxB_calves_f_n_retention(self):
-        return self.animal_features.get("BxB_calves_f_n_retention")
-
-    def get_DxD_heifers_less_2_yr_n_retention(self):
-        return self.animal_features.get("DxD_heifers_less_2_yr_n_retention")
-
-    def get_DxD_steers_less_2_yr_n_retention(self):
-        return self.animal_features.get("DxD_steers_less_2_yr_n_retention")
-
-    def get_DxB_heifers_less_2_yr_n_retention(self):
-        return self.animal_features.get("DxB_heifers_less_2_yr_n_retention")
-
-    def get_DxB_steers_less_2_yr_n_retention(self):
-        return self.animal_features.get("DxB_steers_less_2_yr_n_retention")
-
-    def get_BxB_heifers_less_2_yr_n_retention(self):
-        return self.animal_features.get("BxB_heifers_less_2_yr_n_retention")
-
-    def get_BxB_steers_less_2_yr_n_retention(self):
-        return self.animal_features.get("BxB_steers_less_2_yr_n_retention")
-
-    def get_DxD_heifers_more_2_yr_n_retention(self):
-        return self.animal_features.get("DxD_heifers_more_2_yr_n_retention")
-
-    def get_DxD_steers_more_2_yr_n_retention(self):
-        return self.animal_features.get("DxD_steers_more_2_yr_n_retention")
-
-    def get_DxB_heifers_more_2_yr_n_retention(self):
-        return self.animal_features.get("DxB_heifers_more_2_yr_n_retention")
-
-    def get_DxB_steers_more_2_yr_n_retention(self):
-        return self.animal_features.get("DxB_steers_more_2_yr_n_retention")
-
-    def get_BxB_heifers_more_2_yr_n_retention(self):
-        return self.animal_features.get("BxB_heifers_more_2_yr_n_retention")
-
-    def get_BxB_steers_more_2_yr_n_retention(self):
-        return self.animal_features.get("BxB_steers_more_2_yr_n_retention")
-
-    def get_bulls_n_retention(self):
-        return self.animal_features.get("bulls_n_retention")
-
-    def get_data(self):
-        return self.data_frame
+    def get_lamb_weight_at_birth(self):
+        return self.animal_features.get("lamb_weight_at_birth")
 
     def is_loaded(self):
         if self.data_frame is not None:
@@ -351,58 +142,82 @@ class Animal_Features(object):
         else:
             return False
 
-
 #######################################################################################
-
 
 ######################################################################################
 # Emissions Factors Data
 ######################################################################################
 class Emissions_Factors(object):
     def __init__(self, data):
-        self.data_frame = data
 
+        self.data_frame = data
         self.emissions_factors = {}
 
         for _, row in self.data_frame.iterrows():
-            ef_net_energy_for_maintenance_non_lactating_cow = row.get(
-                "ef_net_energy_for_maintenance_non_lactating_cow"
+
+            ef_net_energy_for_maintenance_sheep_up_to_a_year = row.get(
+                "ef_net_energy_for_maintenance_sheep_up_to_a_year"
             )
-            ef_net_energy_for_maintenance_lactating_cow = row.get(
-                "ef_net_energy_for_maintenance_lactating_cow"
+            ef_net_energy_for_maintenance_sheep_more_than_a_year = row.get(
+                "ef_net_energy_for_maintenance_sheep_more_than_a_year"
             )
-            ef_net_energy_for_maintenance_bulls = row.get(
-                "ef_net_energy_for_maintenance_bulls"
+            ef_net_energy_for_maintenance_intact_male_up_to_year = row.get(
+                "ef_net_energy_for_maintenance_intact_male_up_to_year"
             )
-            ef_feeding_situation_pasture = row.get("ef_feeding_situation_pasture")
-            ef_feeding_situation_large_area = row.get("ef_feeding_situation_large_area")
-            ef_feeding_situation_stall = row.get("ef_feeding_situation_stall")
-            ef_net_energy_for_growth_females = row.get(
-                "ef_net_energy_for_growth_females"
+            ef_net_energy_for_maintenance_intact_male_more_than_a_year = row.get(
+                "ef_net_energy_for_maintenance_intact_male_more_than_a_year"
             )
-            ef_net_energy_for_growth_castrates = row.get(
-                "ef_net_energy_for_growth_castrates"
+
+            ef_feeding_situation_housed_ewes = row.get(
+                "ef_feeding_situation_housed_ewes"
             )
-            ef_net_energy_for_growth_bulls = row.get("ef_net_energy_for_growth_bulls")
+            ef_feeding_situation_grazing_flat_pasture = row.get(
+                "ef_feeding_situation_grazing_flat_pasture"
+            )
+            ef_feeding_situation_grazing_hilly_pasture = row.get(
+                "ef_feeding_situation_grazing_hilly_pasture"
+            )
+            ef_feeding_situation_housed_fattening_lambs = row.get(
+                "ef_feeding_situation_housed_fattening_lambs"
+            )
+
+            ef_net_energy_for_growth_females_a = row.get(
+                "ef_net_energy_for_growth_females_a"
+            )
+            ef_net_energy_for_growth_males_a = row.get(
+                "ef_net_energy_for_growth_males_a"
+            )
+            ef_net_energy_for_growth_castrates_a = row.get(
+                "ef_net_energy_for_growth_castrates_a"
+            )
+
+            ef_net_energy_for_growth_females_b = row.get(
+                "ef_net_energy_for_growth_females_b"
+            )
+            ef_net_energy_for_growth_males_b = row.get(
+                "ef_net_energy_for_growth_males_b"
+            )
+            ef_net_energy_for_growth_castrates_b = row.get(
+                "ef_net_energy_for_growth_castrates_b"
+            )
+
             ef_net_energy_for_pregnancy = row.get("ef_net_energy_for_pregnancy")
-            ef_methane_conversion_factor_dairy_cow = row.get(
-                "ef_methane_conversion_factor_dairy_cow"
+
+            ef_methane_conversion_factor_sheep = row.get(
+                "ef_methane_conversion_factor_sheep"
             )
-            ef_methane_conversion_factor_steer = row.get(
-                "ef_methane_conversion_factor_steer"
+            ef_methane_conversion_factor_lamb = row.get(
+                "ef_methane_conversion_factor_lamb"
             )
-            ef_methane_conversion_factor_calves = row.get(
-                "ef_methane_conversion_factor_calves"
-            )
-            ef_methane_conversion_factor_bulls = row.get(
-                "ef_methane_conversion_factor_bulls"
-            )
+
             ef_fracGASM_total_ammonia_nitrogen_pasture_range_paddock_deposition = row.get(
                 "ef_fracGASM_total_ammonia_nitrogen_pasture_range_paddock_deposition"
             )
-            ef_cpp_pasture_range_paddock_for_dairy_and_non_dairy_direct_n2o = row.get(
-                "ef_cpp_pasture_range_paddock_for_dairy_and_non_dairy_direct_n2o"
+
+            ef3__cpp_pasture_range_paddock_sheep_direct_n2o = row.get(
+                "ef3__cpp_pasture_range_paddock_sheep_direct_n2o"
             )
+
             ef_direct_n2o_emissions_soils = row.get("ef_direct_n2o_emissions_soils")
             ef_indirect_n2o_atmospheric_deposition_to_soils_and_water = row.get(
                 "ef_indirect_n2o_atmospheric_deposition_to_soils_and_water"
@@ -411,11 +226,15 @@ class Emissions_Factors(object):
                 "ef_indirect_n2o_from_leaching_and_runoff"
             )
             ef_TAN_house_liquid = row.get("ef_TAN_house_liquid")
-            ef_TAN_house_solid = row.get("ef_TAN_house_solid")
+            ef_TAN_house_solid_deep_bedding = row.get("ef_TAN_house_solid_deep_bedding")
             ef_TAN_storage_tank = row.get("ef_TAN_storage_tank")
-            ef_TAN_storage_solid = row.get("ef_TAN_storage_solid")
+            ef_TAN_storage_solid_deep_bedding = row.get(
+                "ef_TAN_storage_solid_deep_bedding"
+            )
             ef_mcf_liquid_tank = row.get("ef_mcf_liquid_tank")
-            ef_mcf_solid_storage = row.get("ef_mcf_solid_storage")
+            ef_mcf_solid_storage_deep_bedding = row.get(
+                "ef_mcf_solid_storage_deep_bedding"
+            )
             ef_mcf_anaerobic_digestion = row.get("ef_mcf_anaerobic_digestion")
             ef_n2o_direct_storage_tank_liquid = row.get(
                 "ef_n2o_direct_storage_tank_liquid"
@@ -423,7 +242,9 @@ class Emissions_Factors(object):
             ef_n2o_direct_storage_tank_solid = row.get(
                 "ef_n2o_direct_storage_tank_solid"
             )
-            ef_n2o_direct_storage_solid = row.get("ef_n2o_direct_storage_solid")
+            ef_n2o_direct_storage_solid_deep_bedding = row.get(
+                "ef_n2o_direct_storage_solid_deep_bedding"
+            )
             ef_n2o_direct_storage_tank_anaerobic_digestion = row.get(
                 "ef_n2o_direct_storage_tank_anaerobic_digestion"
             )
@@ -451,38 +272,40 @@ class Emissions_Factors(object):
             ef_fracGASF_ammonium_fertilisers_to_nh3_and_nox = row.get(
                 "ef_fracGASF_ammonium_fertilisers_to_nh3_and_nox"
             )
-            Frac_P_Leach = row.get("Frac_P_Leach")
 
             self.emissions_factors = {
-                "ef_net_energy_for_maintenance_non_lactating_cow": ef_net_energy_for_maintenance_non_lactating_cow,
-                "ef_net_energy_for_maintenance_lactating_cow": ef_net_energy_for_maintenance_lactating_cow,
-                "ef_net_energy_for_maintenance_bulls": ef_net_energy_for_maintenance_bulls,
-                "ef_feeding_situation_pasture": ef_feeding_situation_pasture,
-                "ef_feeding_situation_large_area": ef_feeding_situation_large_area,
-                "ef_feeding_situation_stall": ef_feeding_situation_stall,
-                "ef_net_energy_for_growth_females": ef_net_energy_for_growth_females,
-                "ef_net_energy_for_growth_castrates": ef_net_energy_for_growth_castrates,
-                "ef_net_energy_for_growth_bulls": ef_net_energy_for_growth_bulls,
+                "ef_net_energy_for_maintenance_sheep_up_to_a_year": ef_net_energy_for_maintenance_sheep_up_to_a_year,
+                "ef_net_energy_for_maintenance_sheep_more_than_a_year": ef_net_energy_for_maintenance_sheep_more_than_a_year,
+                "ef_net_energy_for_maintenance_intact_male_up_to_year": ef_net_energy_for_maintenance_intact_male_up_to_year,
+                "ef_net_energy_for_maintenance_intact_male_more_than_a_year": ef_net_energy_for_maintenance_intact_male_more_than_a_year,
+                "ef_feeding_situation_housed_ewes": ef_feeding_situation_housed_ewes,
+                "ef_feeding_situation_grazing_flat_pasture": ef_feeding_situation_grazing_flat_pasture,
+                "ef_feeding_situation_grazing_hilly_pasture": ef_feeding_situation_grazing_hilly_pasture,
+                "ef_feeding_situation_housed_fattening_lambs": ef_feeding_situation_housed_fattening_lambs,
+                "ef_net_energy_for_growth_females_a": ef_net_energy_for_growth_females_a,
+                "ef_net_energy_for_growth_males_a": ef_net_energy_for_growth_males_a,
+                "ef_net_energy_for_growth_castrates_a": ef_net_energy_for_growth_castrates_a,
+                "ef_net_energy_for_growth_females_b": ef_net_energy_for_growth_females_b,
+                "ef_net_energy_for_growth_males_b": ef_net_energy_for_growth_males_b,
+                "ef_net_energy_for_growth_castrates_b": ef_net_energy_for_growth_castrates_b,
                 "ef_net_energy_for_pregnancy": ef_net_energy_for_pregnancy,
-                "ef_methane_conversion_factor_dairy_cow": ef_methane_conversion_factor_dairy_cow,
-                "ef_methane_conversion_factor_steer": ef_methane_conversion_factor_steer,
-                "ef_methane_conversion_factor_calves": ef_methane_conversion_factor_calves,
-                "ef_methane_conversion_factor_bulls": ef_methane_conversion_factor_bulls,
+                "ef_methane_conversion_factor_sheep": ef_methane_conversion_factor_sheep,
+                "ef_methane_conversion_factor_lamb": ef_methane_conversion_factor_lamb,
                 "ef_fracGASM_total_ammonia_nitrogen_pasture_range_paddock_deposition": ef_fracGASM_total_ammonia_nitrogen_pasture_range_paddock_deposition,
-                "ef_cpp_pasture_range_paddock_for_dairy_and_non_dairy_direct_n2o": ef_cpp_pasture_range_paddock_for_dairy_and_non_dairy_direct_n2o,
+                "ef3__cpp_pasture_range_paddock_sheep_direct_n2o": ef3__cpp_pasture_range_paddock_sheep_direct_n2o,
                 "ef_direct_n2o_emissions_soils": ef_direct_n2o_emissions_soils,
                 "ef_indirect_n2o_atmospheric_deposition_to_soils_and_water": ef_indirect_n2o_atmospheric_deposition_to_soils_and_water,
                 "ef_indirect_n2o_from_leaching_and_runoff": ef_indirect_n2o_from_leaching_and_runoff,
                 "ef_TAN_house_liquid": ef_TAN_house_liquid,
-                "ef_TAN_house_solid": ef_TAN_house_solid,
+                "ef_TAN_house_solid_deep_bedding": ef_TAN_house_solid_deep_bedding,
                 "ef_TAN_storage_tank": ef_TAN_storage_tank,
-                "ef_TAN_storage_solid": ef_TAN_storage_solid,
+                "ef_TAN_storage_solid_deep_bedding": ef_TAN_storage_solid_deep_bedding,
                 "ef_mcf_liquid_tank": ef_mcf_liquid_tank,
-                "ef_mcf_solid_storage": ef_mcf_solid_storage,
+                "ef_mcf_solid_storage_deep_bedding": ef_mcf_solid_storage_deep_bedding,
                 "ef_mcf_anaerobic_digestion": ef_mcf_anaerobic_digestion,
                 "ef_n2o_direct_storage_tank_liquid": ef_n2o_direct_storage_tank_liquid,
                 "ef_n2o_direct_storage_tank_solid": ef_n2o_direct_storage_tank_solid,
-                "ef_n2o_direct_storage_solid": ef_n2o_direct_storage_solid,
+                "ef_n2o_direct_storage_solid_deep_bedding": ef_n2o_direct_storage_solid_deep_bedding,
                 "ef_n2o_direct_storage_tank_anaerobic_digestion": ef_n2o_direct_storage_tank_anaerobic_digestion,
                 "ef_nh3_daily_spreading_none": ef_nh3_daily_spreading_none,
                 "ef_nh3_daily_spreading_manure": ef_nh3_daily_spreading_manure,
@@ -496,61 +319,75 @@ class Emissions_Factors(object):
                 "ef_frac_leach_runoff": ef_frac_leach_runoff,
                 "ef_ammonium_nitrate": ef_ammonium_nitrate,
                 "ef_fracGASF_ammonium_fertilisers_to_nh3_and_nox": ef_fracGASF_ammonium_fertilisers_to_nh3_and_nox,
-                "ef_Frac_P_Leach": Frac_P_Leach,
             }
 
-    def get_ef_net_energy_for_maintenance_non_lactating_cow(self):
+    def get_ef_net_energy_for_maintenance_sheep_up_to_a_year(self):
         return self.emissions_factors.get(
-            "ef_net_energy_for_maintenance_non_lactating_cow"
+            "ef_net_energy_for_maintenance_sheep_up_to_a_year"
         )
 
-    def get_ef_net_energy_for_maintenance_lactating_cow(self):
-        return self.emissions_factors.get("ef_net_energy_for_maintenance_lactating_cow")
+    def get_ef_net_energy_for_maintenance_sheep_more_than_a_year(self):
+        return self.emissions_factors.get(
+            "ef_net_energy_for_maintenance_sheep_more_than_a_year"
+        )
 
-    def get_ef_net_energy_for_maintenance_bulls(self):
-        return self.emissions_factors.get("ef_net_energy_for_maintenance_bulls")
+    def get_ef_net_energy_for_maintenance_intact_male_up_to_year(self):
+        return self.emissions_factors.get(
+            "ef_net_energy_for_maintenance_intact_male_up_to_year"
+        )
 
-    def get_ef_feeding_situation_pasture(self):
-        return self.emissions_factors.get("ef_feeding_situation_pasture")
+    def get_ef_net_energy_for_maintenance_intact_male_more_than_a_year(self):
+        return self.emissions_factors.get(
+            "ef_net_energy_for_maintenance_intact_male_more_than_a_year"
+        )
 
-    def get_ef_feeding_situation_large_area(self):
-        return self.emissions_factors.get("ef_feeding_situation_large_area")
+    def get_ef_feeding_situation_housed_ewes(self):
+        return self.emissions_factors.get("ef_feeding_situation_housed_ewes")
 
-    def get_ef_feeding_situation_stall(self):
-        return self.emissions_factors.get("ef_feeding_situation_stall")
+    def get_ef_feeding_situation_grazing_flat_pasture(self):
+        return self.emissions_factors.get("ef_feeding_situation_grazing_flat_pasture")
 
-    def get_ef_net_energy_for_growth_females(self):
-        return self.emissions_factors.get("ef_net_energy_for_growth_females")
+    def get_ef_feeding_situation_grazing_hilly_pasture(self):
+        return self.emissions_factors.get("ef_feeding_situation_grazing_hilly_pasture")
 
-    def get_ef_net_energy_for_growth_castrates(self):
-        return self.emissions_factors.get("ef_net_energy_for_growth_castrates")
+    def get_ef_feeding_situation_housed_fattening_lambs(self):
+        return self.emissions_factors.get("ef_feeding_situation_housed_fattening_lambs")
 
-    def get_ef_net_energy_for_growth_bulls(self):
-        return self.emissions_factors.get("ef_net_energy_for_growth_bulls")
+    def get_ef_net_energy_for_growth_females_a(self):
+        return self.emissions_factors.get("ef_net_energy_for_growth_females_a")
+
+    def get_ef_net_energy_for_growth_males_a(self):
+        return self.emissions_factors.get("ef_net_energy_for_growth_males_a")
+
+    def ef_net_energy_for_growth_castrates_a(self):
+        return self.emissions_factors.get("ef_net_energy_for_growth_castrates_a")
+
+    def get_ef_net_energy_for_growth_females_b(self):
+        return self.emissions_factors.get("ef_net_energy_for_growth_females_b")
+
+    def get_ef_net_energy_for_growth_males_b(self):
+        return self.emissions_factors.get("ef_net_energy_for_growth_males_b")
+
+    def ef_net_energy_for_growth_castrates_b(self):
+        return self.emissions_factors.get("ef_net_energy_for_growth_castrates_b")
 
     def get_ef_net_energy_for_pregnancy(self):
         return self.emissions_factors.get("ef_net_energy_for_pregnancy")
 
-    def get_ef_methane_conversion_factor_dairy_cow(self):
-        return self.emissions_factors.get("ef_methane_conversion_factor_dairy_cow")
+    def get_ef_methane_conversion_factor_sheep(self):
+        return self.emissions_factors.get("ef_methane_conversion_factor_sheep")
 
-    def get_ef_methane_conversion_factor_steer(self):
-        return self.emissions_factors.get("ef_methane_conversion_factor_steer")
-
-    def get_ef_methane_conversion_factor_calves(self):
-        return self.emissions_factors.get("ef_methane_conversion_factor_calves")
-
-    def get_ef_methane_conversion_factor_bulls(self):
-        return self.emissions_factors.get("ef_methane_conversion_factor_bulls")
+    def get_ef_methane_conversion_factor_lamb(self):
+        return self.emissions_factors.get("ef_methane_conversion_factor_lamb")
 
     def get_ef_fracGASM_total_ammonia_nitrogen_pasture_range_paddock_deposition(self):
         return self.emissions_factors.get(
             "ef_fracGASM_total_ammonia_nitrogen_pasture_range_paddock_deposition"
         )
 
-    def get_ef_cpp_pasture_range_paddock_for_dairy_and_non_dairy_direct_n2o(self):
+    def get_ef3__cpp_pasture_range_paddock_sheep_direct_n2o(self):
         return self.emissions_factors.get(
-            "ef_cpp_pasture_range_paddock_for_dairy_and_non_dairy_direct_n2o"
+            "ef3__cpp_pasture_range_paddock_sheep_direct_n2o"
         )
 
     def get_ef_direct_n2o_emissions_soils(self):
@@ -567,20 +404,20 @@ class Emissions_Factors(object):
     def get_ef_TAN_house_liquid(self):
         return self.emissions_factors.get("ef_TAN_house_liquid")
 
-    def get_ef_TAN_house_solid(self):
-        return self.emissions_factors.get("ef_TAN_house_solid")
+    def get_ef_TAN_house_solid_deep_bedding(self):
+        return self.emissions_factors.get("ef_TAN_house_solid_deep_bedding")
 
     def get_ef_TAN_storage_tank(self):
         return self.emissions_factors.get("ef_TAN_storage_tank")
 
-    def get_ef_TAN_storage_solid(self):
-        return self.emissions_factors.get("ef_TAN_storage_solid")
+    def get_ef_TAN_storage_solid_deep_bedding(self):
+        return self.emissions_factors.get("ef_TAN_storage_solid_deep_bedding")
 
     def get_ef_mcf_liquid_tank(self):
         return self.emissions_factors.get("ef_mcf_liquid_tank")
 
-    def get_ef_mcf_solid_storage(self):
-        return self.emissions_factors.get("ef_mcf_solid_storage")
+    def get_ef_mcf_solid_storage_deep_bedding(self):
+        return self.emissions_factors.get("ef_mcf_solid_storage_deep_bedding")
 
     def get_ef_mcf_anaerobic_digestion(self):
         return self.emissions_factors.get("ef_mcf_anaerobic_digestion")
@@ -591,8 +428,8 @@ class Emissions_Factors(object):
     def get_ef_n2o_direct_storage_tank_solid(self):
         return self.emissions_factors.get("ef_n2o_direct_storage_tank_solid")
 
-    def get_ef_n2o_direct_storage_solid(self):
-        return self.emissions_factors.get("ef_n2o_direct_storage_solid")
+    def get_ef_n2o_direct_storage_solid_deep_bedding(self):
+        return self.emissions_factors.get("ef_n2o_direct_storage_solid_deep_bedding")
 
     def get_ef_n2o_direct_storage_tank_anaerobic_digestion(self):
         return self.emissions_factors.get(
@@ -637,24 +474,18 @@ class Emissions_Factors(object):
             "ef_fracGASF_ammonium_fertilisers_to_nh3_and_nox"
         )
 
-    def get_ef_Frac_P_Leach(self):
-        return self.emissions_factors.get("ef_Frac_P_Leach")
-
-    def get_data(self):
-        return self.data_frame
-
     def is_loaded(self):
         if self.data_frame is not None:
             return True
         else:
             return False
 
-
 #######################################################################################
 
 
 class Grass(object):
     def average(self, property):
+
         values = [
             row.get(property)
             for _, row in self.data_frame.iterrows()
@@ -664,11 +495,12 @@ class Grass(object):
         return sum(values) / len(values)
 
     def __init__(self, data):
-        self.data_frame = data
 
+        self.data_frame = data
         self.grasses = {}
 
         for _, row in self.data_frame.iterrows():
+
             genus = row.get("grass_genus".lower())
             dmd = row.get("forage_dry_matter_digestibility")
             cp = row.get("crude_protein")
@@ -698,21 +530,18 @@ class Grass(object):
     def get_gross_energy_mje_dry_matter(self, forage):
         return self.grasses.get(forage).get("gross_energy")
 
-    def get_data(self):
-        return self.data_frame
-
     def is_loaded(self):
         if self.data_frame is not None:
             return True
         else:
             return False
 
-
 #######################################################################################
 # concentrate file class
 ########################################################################################
 class Concentrate(object):
     def average(self, property):
+
         values = [
             row.get(property)
             for _, row in self.data_frame.iterrows()
@@ -725,18 +554,18 @@ class Concentrate(object):
             pass
 
     def __init__(self, data):
-        self.data_frame = data
 
+        self.data_frame = data
         self.concentrates = {}
 
         for _, row in self.data_frame.iterrows():
+
             con_type = row.get("con_type".lower())
             con_dmd = row.get("con_dry_matter_digestibility")
             con_de = row.get("con_digestible_energy")
             con_cp = row.get("con_crude_protein")
             con_gross_energy = row.get("gross_energy_mje_dry_matter")
             con_co2_e = row.get("con_co2_e")
-            con_po4_e = row.get("con_po4_e")
 
             self.concentrates[con_type] = {
                 "con_dry_matter_digestibility": con_dmd,
@@ -744,15 +573,13 @@ class Concentrate(object):
                 "con_crude_protein": con_cp,
                 "gross_energy_mje_dry_matter": con_gross_energy,
                 "con_co2_e": con_co2_e,
-                "con_po4_e": con_po4_e,
             }
 
         # Pre-compute averages
         self.concentrates["average"] = {
-            "con_dry_matter_digestibility": self.average(
-                "con_dry_matter_digestibility"
+            "con_dry_matter_digestibility": self.average("con_dry_matter_digestibility"
             ),
-            "con_digestible_energy": self.average("con_digestible_energy"),
+            "con_digestible_energy": self.average( "con_digestible_energy"),
             "con_crude_protein": self.average("con_crude_protein"),
         }
 
@@ -770,30 +597,25 @@ class Concentrate(object):
 
     def get_con_co2_e(self, concentrate):
         return self.concentrates.get(concentrate).get("con_co2_e")
-
-    def get_con_po4_e(self, concentrate):
-        return self.concentrates.get(concentrate).get("con_po4_e")
-
-    def get_data(self):
-        return self.data_frame
-
+    
     def is_loaded(self):
         if self.data_frame is not None:
             return True
         else:
             return False
 
-
 ########################################################################################
 # Upstream class
 ########################################################################################
 class Upstream(object):
     def __init__(self, data):
-        self.data_frame = data
 
+        # data_frame=pandas.read_sql("SELECT * FROM upstream_database", farm_lca_engine)
+        self.data_frame = data
         self.upstream = {}
 
         for _, row in self.data_frame.iterrows():
+
             upstream_type = row.get("upstream_type".lower())
             upstream_fu = row.get("upstream_fu")
             upstream_kg_co2e = row.get("upstream_kg_co2e")
@@ -829,16 +651,11 @@ class Upstream(object):
     def get_upstream_kg_sbe(self, upstream):
         return self.upstream.get(upstream).get("upstream_kg_sbe")
 
-    def get_data(self):
-        return self.data_frame
-
     def is_loaded(self):
         if self.data_frame is not None:
             return True
         else:
             return False
-
-
 #############################################################################################
 
 
@@ -925,36 +742,3 @@ def print_livestock_data(data):
                     print(
                         f"{cohort}: {attribute} = {data[key][animal].__getattribute__(cohort).__getattribute__(attribute)}"
                     )
-
-
-def create_emissions_dictionary(keys):
-    key_list = [
-        "enteric_ch4",
-        "manure_management_N2O",
-        "manure_management_CH4",
-        "manure_applied_N",
-        "N_direct_PRP",
-        "N_direct_PRP",
-        "N_indirect_PRP",
-        "N_direct_fertiliser",
-        "N_indirect_fertiliser",
-        "soils_CO2",
-        "soil_organic_N_direct",
-        "soil_organic_N_indirect",
-        "soil_inorganic_N_direct",
-        "soil_inorganic_N_indirect",
-        "soil_N_direct",
-        "soil_N_indirect",
-        "soils_N2O",
-    ]
-
-    keys_dict = dict.fromkeys(keys)
-
-    emissions_dict = dict.fromkeys(key_list)
-
-    for key in emissions_dict.keys():
-        emissions_dict[key] = copy.deepcopy(keys_dict)
-        for inner_k in keys_dict.keys():
-            emissions_dict[key][inner_k] = 0
-
-    return emissions_dict
