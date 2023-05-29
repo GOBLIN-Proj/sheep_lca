@@ -1,10 +1,18 @@
 # IMPORTS
 from sheep_lca.data_loader import Loader
-import copy 
+import copy
+
 
 class Cohorts:
     def __init__(self) -> None:
-        self.COHORTS = ["ewes", "lamb_less_1_yr", "lamb_more_1_yr", "male_less_1_yr", "ram"]
+        self.COHORTS = [
+            "ewes",
+            "lamb_less_1_yr",
+            "lamb_more_1_yr",
+            "male_less_1_yr",
+            "ram",
+        ]
+
 
 ###################################################################################################################
 class Energy:
@@ -61,7 +69,6 @@ class Energy:
         # 1.123-(4.092*(POWER(10,-3))*REFS!$Y$22)+
         # (1.126*(POWER(10,-5))*REFS!$Y$22)*(REFS!$Y$22))-(25.4/(IFERROR(VLOOKUP(CP!J2,REFS!X:Y,2,FALSE),REFS!$Y$22)))
 
-
     def ratio_of_net_energy_growth(self, animal):
         """
         REG = Ration of net energy for growth to total energy consumed, minus poop
@@ -99,11 +106,9 @@ class Energy:
             - (37.4 / DE)
         )
 
-
     #############################################################################################
     # Energy & Enteric Fermentation
     #############################################################################################
-
 
     def net_energy_for_maintenance(self, animal):
         """
@@ -127,7 +132,6 @@ class Energy:
 
         return cfi * (animal.weight**0.75)
 
-
     def net_energy_for_activity(self, animal):
         """
         When this function is called it utilises the net_energy_for_maintenance eq multiplied by
@@ -144,7 +148,6 @@ class Energy:
         }
 
         return grazing_type_coef.get(animal.grazing) * animal.weight
-
 
     def net_energy_for_weight_gain(self, animal):
 
@@ -197,7 +200,6 @@ class Energy:
 
         return (weight_gain * (a + (0.5 * b) * (bw_initial + bw_finish))) / year
 
-
     def net_energy_for_lactation(self, animal):
         """
         This function utilised milk density and fat content to calculate the energy needed for milk production
@@ -215,7 +217,6 @@ class Energy:
         else:
             return 0
 
-
     def net_energy_for_wool(self, animal):
 
         energy_val_wool = 24
@@ -223,7 +224,6 @@ class Energy:
         wool_production = animal.wool
 
         return (energy_val_wool * wool_production) / 365
-
 
     def net_energy_for_pregnancy(self, animal):
         """
@@ -241,19 +241,19 @@ class Energy:
 
         return nep
 
-
     def gross_energy_from_concentrate(self, animal):
 
-        dm = self.loader_class.concentrates.get_con_dry_matter_digestibility(animal.con_type)
-        mj = self.loader_class.concentrates.get_gross_energy_mje_dry_matter(animal.con_type)
+        dm = self.loader_class.concentrates.get_con_dry_matter_digestibility(
+            animal.con_type
+        )
+        mj = self.loader_class.concentrates.get_gross_energy_mje_dry_matter(
+            animal.con_type
+        )
 
         return (animal.con_amount * dm / 100) * mj
 
-
     ##REMI ADDED Functions
-    def gross_amount_from_con_in_percent(self,
-        animal, share_in_percent
-    ):
+    def gross_amount_from_con_in_percent(self, animal, share_in_percent):
 
         """
         This function utilises all of the energy equations to estimate the total energy intake from grasses minus the
@@ -267,12 +267,20 @@ class Energy:
         NEL = self.net_energy_for_lactation(animal)
         NEP = self.net_energy_for_pregnancy(animal)
         NEG = self.net_energy_for_weight_gain(animal)
-        dm = self.loader_class.concentrates.get_con_dry_matter_digestibility(animal.con_type)
+        dm = self.loader_class.concentrates.get_con_dry_matter_digestibility(
+            animal.con_type
+        )
         DMD = self.loader_class.grass.get_forage_dry_matter_digestibility(animal.forage)
-        mj_con = self.loader_class.concentrates.get_gross_energy_mje_dry_matter(animal.con_type)
-        mj_grass = self.loader_class.grass.get_gross_energy_mje_dry_matter(animal.forage)
+        mj_con = self.loader_class.concentrates.get_gross_energy_mje_dry_matter(
+            animal.con_type
+        )
+        mj_grass = self.loader_class.grass.get_gross_energy_mje_dry_matter(
+            animal.forage
+        )
 
-        DMD_average = share_in_percent / 100.0 * dm + (100.0 - share_in_percent) / 100 * DMD
+        DMD_average = (
+            share_in_percent / 100.0 * dm + (100.0 - share_in_percent) / 100 * DMD
+        )
         mj_average = (
             share_in_percent / 100.0 * mj_con
             + (100.0 - share_in_percent) / 100.0 * mj_grass
@@ -284,10 +292,7 @@ class Energy:
             * (share_in_percent / (100.0))
         )
 
-
-    def gross_energy_from_grass(self,
-        animal
-    ):
+    def gross_energy_from_grass(self, animal):
 
         """
         This function utilises all of the energy equations to estimate the total energy intake from grasses minus the
@@ -317,9 +322,7 @@ class GrassFeed:
         self.cohorts_class = Cohorts()
         self.loader_class = Loader(ef_country)
 
-    def dry_matter_from_grass(self,
-        animal
-    ):
+    def dry_matter_from_grass(self, animal):
 
         """
         This function utilises all of the energy equations to estimate the total energy intake from grasses minus the
@@ -337,25 +340,26 @@ class GrassFeed:
         NEG = self.net_energy_for_weight_gain(animal)
         con = self.gross_energy_from_concentrate(animal)
         GE = self.loader_class.grass.get_gross_energy_mje_dry_matter(animal.forage)
-        dm = self.loader_class.concentrates.get_con_dry_matter_digestibility(animal.con_type)
+        dm = self.loader_class.concentrates.get_con_dry_matter_digestibility(
+            animal.con_type
+        )
 
         share_con = con / (((NEM + NEA + NEL + NEP) / REM) + (NEG / REG))
 
         DMD_average = share_con * dm + (1 - share_con) * DMD
 
         return (
-            ((((NEM + NEA + NEL + NEP) / REM) + (NEG / REG)) / (DMD_average / 100.0) - con)
+            (
+                (((NEM + NEA + NEL + NEP) / REM) + (NEG / REG)) / (DMD_average / 100.0)
+                - con
+            )
         ) / GE
-
 
     #########################################################################################################
     # CH4 CAlculations
     ########################################################################################################
 
-
-    def ch4_emissions_factor(self,
-        animal
-    ):
+    def ch4_emissions_factor(self, animal):
         """
         Function calculates the amount of methane emissions from feed intake utilising methane converstion
         factors
@@ -376,27 +380,29 @@ class GrassFeed:
 
         sheep_cohort = {"Sheep": ["lamb_less_1_yr", "male_less_1_yr"]}
         if animal.cohort in sheep_cohort["Sheep"]:
-            Ym = self.loader_class.emissions_factors.get_ef_methane_conversion_factor_lamb()
+            Ym = (
+                self.loader_class.emissions_factors.get_ef_methane_conversion_factor_lamb()
+            )
         else:
-            Ym = self.loader_class.emissions_factors.get_ef_methane_conversion_factor_sheep()
+            Ym = (
+                self.loader_class.emissions_factors.get_ef_methane_conversion_factor_sheep()
+            )
 
         # print(Ym)
         methane_energy = 55.65  # MJ/kg of CH4
 
         GEC = self.energy_class.gross_energy_from_concentrate(animal)
-        GEG = self.energy_class.gross_energy_from_grass(
-            animal
-        )
+        GEG = self.energy_class.gross_energy_from_grass(animal)
 
         GET = GEC + GEG
 
         return (GET * Ym * year) / methane_energy
 
 
-
 #############################################################################################
 # Grazing Stage
 #############################################################################################
+
 
 class GrazingStage:
     def __init__(self, ef_country):
@@ -408,10 +414,7 @@ class GrazingStage:
         hours = 24
         return animal.t_outdoors / hours
 
-
-    def volatile_solids_excretion_rate_GRAZING(self, 
-        animal
-    ):
+    def volatile_solids_excretion_rate_GRAZING(self, animal):
         """
         This function calculates Volitile Solids Excretion Rate (kg/day -1) to pasture
 
@@ -423,14 +426,14 @@ class GrazingStage:
         18.45 = conversion factor for dietary GE per kg of dry matter, MJ kg-1.
         """
 
-        DEC = self.loader_class.concentrates.get_con_digestible_energy(animal.con_type)  # Digestibility
+        DEC = self.loader_class.concentrates.get_con_digestible_energy(
+            animal.con_type
+        )  # Digestibility
         UE = 0.04
         ASH = 0.08
         DMD = self.loader_class.grass.get_forage_dry_matter_digestibility(animal.forage)
         GEC = self.energy_class.gross_energy_from_concentrate(animal)
-        GEG = self.energy_class.gross_energy_from_grass(
-            animal
-        )
+        GEG = self.energy_class.gross_energy_from_grass(animal)
         OUT = self.percent_outdoors(animal)
 
         return (
@@ -438,10 +441,7 @@ class GrazingStage:
             + ((GEC * (1 - (DEC / 100)) + (UE * GEC)) * (((1 - ASH) / 18.45)))
         ) * OUT
 
-
-    def net_excretion_GRAZING(self,
-        animal
-    ):
+    def net_excretion_GRAZING(self, animal):
 
         """
         This function calculates the net Nitrogen excretion (Nex) per kg to pasture
@@ -454,9 +454,7 @@ class GrazingStage:
         )  # crude protein percentage (N contained in crude protein), apparently, 16% is the average N content; https://www.feedipedia.org/node/8329
         FCP = self.loader_class.grass.get_crude_protein(animal.forage)
         GEC = self.energy_class.gross_energy_from_concentrate(animal)
-        GEG = self.energy_class.gross_energy_from_grass(
-            animal
-        )
+        GEG = self.energy_class.gross_energy_from_grass(animal)
         OUT = self.percent_outdoors(animal)
         N_retention_frac = 0.10
 
@@ -465,31 +463,20 @@ class GrazingStage:
             + ((((GEG * 365) / 18.45) * (FCP / 100.0) / 6.25) * (1 - N_retention_frac))
         ) * OUT
 
-
-    def ch4_emissions_for_grazing(self,
-        animal
-    ):
+    def ch4_emissions_for_grazing(self, animal):
 
         """
         EQUATION 10.23 CH4 EMISSION FACTOR FROM MANURE MANAGEMENT. Values can be references in tables 10A onwards
         """
         year = 365
         return (
-            (
-                self.volatile_solids_excretion_rate_GRAZING(
-                    animal
-                )
-                * year
-            )
+            (self.volatile_solids_excretion_rate_GRAZING(animal) * year)
             * 0.1
             * 0.67
             * 0.19
         )
 
-
-    def nh3_emissions_per_year_GRAZING(self,
-        animal
-    ):
+    def nh3_emissions_per_year_GRAZING(self, animal):
         """
         This function returns total N-NH3 per year.
         EQUATION 10.26: N LOSSES DUE TO VOLATILISATION FROM MANURE MANAGEMENT
@@ -505,14 +492,7 @@ class GrazingStage:
 
         TAN = total_ammonia_nitrogen.get(animal.cohort)
 
-        return (
-            self.net_excretion_GRAZING(
-                animal
-            )
-            * 0.6
-            * TAN
-        )
-
+        return self.net_excretion_GRAZING(animal) * 0.6 * TAN
 
     def Nleach_GRAZING(self, animal):
 
@@ -522,13 +502,7 @@ class GrazingStage:
 
         ten_percent_nex = 0.1
 
-        return (
-            self.net_excretion_GRAZING(
-                animal
-            )
-            * ten_percent_nex
-        )
-
+        return self.net_excretion_GRAZING(animal) * ten_percent_nex
 
     def PLeach_GRAZING(self, animal):
 
@@ -536,16 +510,9 @@ class GrazingStage:
         This function returns the proportion of P leached from pasture
         """
 
-        return (
-            self.net_excretion_GRAZING(
-                animal
-            )
-            * (1.8 / 5)
-        ) * 0.03
-
+        return (self.net_excretion_GRAZING(animal) * (1.8 / 5)) * 0.03
 
     # direct and indirect (from leaching) N20 from PRP
-
 
     def PRP_N2O_direct(self, animal):
 
@@ -567,13 +534,7 @@ class GrazingStage:
         }
 
         EF = direct_n2o_emissions_factors.get(animal.cohort)
-        return (
-            self.net_excretion_GRAZING(
-                animal
-            )
-            * EF
-        )
-
+        return self.net_excretion_GRAZING(animal) * EF
 
     def PRP_N2O_indirect(self, animal):
 
@@ -604,9 +565,7 @@ class GrazingStage:
         indirect_atmosphere = atmospheric_deposition.get(animal.cohort)
         indirect_leaching = leaching.get(animal.cohort)
 
-        NH3 = self.nh3_emissions_per_year_GRAZING(
-            animal
-        )
+        NH3 = self.nh3_emissions_per_year_GRAZING(animal)
         NL = self.Nleach_GRAZING(animal)
 
         return (NH3 * indirect_atmosphere) + (NL * indirect_leaching)
@@ -616,6 +575,7 @@ class GrazingStage:
 # Housing Stage
 #############################################################################################
 
+
 class HousingStage:
     def __init__(self, ef_country):
         self.loader_class = Loader(ef_country)
@@ -624,7 +584,6 @@ class HousingStage:
     def percent_indoors(self, animal):
         hours = 24
         return (animal.t_indoors + animal.t_stabled) / hours
-
 
     def VS_HOUSED(self, animal):
         """
@@ -646,9 +605,7 @@ class HousingStage:
         ASH = 0.08
         DMD = self.loader_class.grass.get_forage_dry_matter_digestibility(animal.forage)
         GEC = self.energy_class.gross_energy_from_concentrate(animal)
-        GEG = self.energy_class.gross_energy_from_grass(
-            animal
-        )
+        GEG = self.energy_class.gross_energy_from_grass(animal)
         IN = self.percent_indoors(animal)
 
         # The second instance of GEG in part 2 of equation may need to be changed to GEC
@@ -658,10 +615,7 @@ class HousingStage:
             + ((GEG * (1 - (DMD / 100)) + (UE * GEG)) * ((1 - ASH) / 18.45))
         ) * IN
 
-
-    def net_excretion_HOUSED(self, 
-        animal
-    ):
+    def net_excretion_HOUSED(self, animal):
         """
         This function returns kg of nitrogen excreted per year while animals are housed
 
@@ -674,9 +628,7 @@ class HousingStage:
         )  # crude protein percentage (N contained in crude protein), apparently, 16% is the average N content; https://www.feedipedia.org/node/8329
         FCP = self.loader_class.grass.get_crude_protein(animal.forage)
         GEC = self.energy_class.gross_energy_from_concentrate(animal)
-        GEG = self.energy_class.gross_energy_from_grass(
-            animal
-        )
+        GEG = self.energy_class.gross_energy_from_grass(animal)
 
         N_retention_frac = 0.10
 
@@ -687,10 +639,7 @@ class HousingStage:
             + ((((GEG * 365) / 18.45) * (FCP / 100.0) / 6.25) * (1 - N_retention_frac))
         ) * IN
 
-
-    def total_ammonia_nitrogen_nh4_HOUSED(self,
-        animal
-    ):
+    def total_ammonia_nitrogen_nh4_HOUSED(self, animal):
         """
         This function returns the total ammonia nitrate (TAN) NH4 per year
 
@@ -698,17 +647,9 @@ class HousingStage:
         """
         percentage_nex = 0.6
 
-        return (
-            self.net_excretion_HOUSED(
-                animal
-            )
-            * percentage_nex
-        )
+        return self.net_excretion_HOUSED(animal) * percentage_nex
 
-
-    def nh3_emissions_per_year_HOUSED(self, 
-        animal
-    ):
+    def nh3_emissions_per_year_HOUSED(self, animal):
 
         """
         This function returns the total nh3 emissions per year for housing
@@ -733,16 +674,11 @@ class HousingStage:
         }
 
         return (
-            self.total_ammonia_nitrogen_nh4_HOUSED(
-                animal
-            )
+            self.total_ammonia_nitrogen_nh4_HOUSED(animal)
             * storage_TAN[animal.mm_storage]
         )
 
-
-    def HOUSING_N2O_indirect(self,
-        animal
-    ):
+    def HOUSING_N2O_indirect(self, animal):
 
         """
         this function returns the indirect emissions from the housing Stage
@@ -751,12 +687,7 @@ class HousingStage:
             self.loader_class.emissions_factors.get_ef_indirect_n2o_atmospheric_deposition_to_soils_and_water()
         )
 
-        indirect_n2o = (
-            self.nh3_emissions_per_year_HOUSED(
-                animal
-            )
-            * ef
-        )
+        indirect_n2o = self.nh3_emissions_per_year_HOUSED(animal) * ef
 
         return indirect_n2o
 
@@ -769,10 +700,7 @@ class StorageStage:
         self.loader_class = Loader(ef_country)
         self.housing_class = HousingStage(ef_country)
 
-
-    def net_excretion_STORAGE(self,
-        animal
-    ):
+    def net_excretion_STORAGE(self, animal):
 
         """
         This function returns kg of Nex per year from storage
@@ -780,14 +708,9 @@ class StorageStage:
 
         return self.housing_class.net_excretion_HOUSED(
             animal
-        ) - self.housing_class.nh3_emissions_per_year_HOUSED(
-            animal
-        )
+        ) - self.housing_class.nh3_emissions_per_year_HOUSED(animal)
 
-
-    def total_ammonia_nitrogen_nh4_STORAGE(self,
-        animal
-    ):
+    def total_ammonia_nitrogen_nh4_STORAGE(self, animal):
 
         """
         this function returns the total ammonia nitrogen (TAN) NH4 per year
@@ -796,13 +719,7 @@ class StorageStage:
         """
         percentage_nex = 0.6
 
-        return (
-            self.net_excretion_STORAGE(
-                animal
-            )
-            * percentage_nex
-        )
-
+        return self.net_excretion_STORAGE(animal) * percentage_nex
 
     def CH4_STORAGE(self, animal):
 
@@ -824,10 +741,9 @@ class StorageStage:
             "biodigester": self.loader_class.emissions_factors.get_ef_mcf_anaerobic_digestion(),
         }
 
-        return (
-            self.housing_class.VS_HOUSED(animal) * 365
-        ) * (0.1 * 0.67 * storage_MCF[animal.mm_storage])
-
+        return (self.housing_class.VS_HOUSED(animal) * 365) * (
+            0.1 * 0.67 * storage_MCF[animal.mm_storage]
+        )
 
     def STORAGE_N2O_direct(self, animal):
 
@@ -846,17 +762,9 @@ class StorageStage:
             "biodigester": self.loader_class.emissions_factors.get_ef_n2o_direct_storage_tank_anaerobic_digestion(),
         }
 
-        return (
-            self.net_excretion_STORAGE(
-                animal
-            )
-            * storage_N2O[animal.mm_storage]
-        )
+        return self.net_excretion_STORAGE(animal) * storage_N2O[animal.mm_storage]
 
-
-    def nh3_emissions_per_year_STORAGE(self,
-        animal
-    ):
+    def nh3_emissions_per_year_STORAGE(self, animal):
         """
         This function returns the total nh3 emissions per year for storage
 
@@ -874,16 +782,11 @@ class StorageStage:
         }
 
         return (
-            self.total_ammonia_nitrogen_nh4_STORAGE(
-                animal
-            )
+            self.total_ammonia_nitrogen_nh4_STORAGE(animal)
             * storage_TAN[animal.mm_storage]
         )
 
-
-    def STORAGE_N2O_indirect(self,
-        animal
-    ):
+    def STORAGE_N2O_indirect(self, animal):
 
         """
         This functions returns indirect n2o from atmospheric deposition and leaching related to storage
@@ -899,9 +802,7 @@ class StorageStage:
 
         indirect_atmosphere = atmospheric_deposition.get(animal.cohort)
 
-        NH3 = self.nh3_emissions_per_year_STORAGE(
-            animal
-        )
+        NH3 = self.nh3_emissions_per_year_STORAGE(animal)
 
         return NH3 * indirect_atmosphere
 
@@ -910,50 +811,32 @@ class StorageStage:
 # Daily Spread
 ###############################################################################
 
+
 class DailySpread:
     def __init__(self, ef_country):
         self.loader_class = Loader(ef_country)
         self.storage_class = StorageStage(ef_country)
 
-    def net_excretion_SPREAD(self,
-        animal
-    ):
+    def net_excretion_SPREAD(self, animal):
 
         """
         This function returns Nex from daily spread
         """
 
-        nex_storage = self.net_excretion_STORAGE(
-            animal
-        )
-        direct_n2o = self.STORAGE_N2O_direct(
-            animal
-        )
-        nh3_emissions = self.nh3_emissions_per_year_STORAGE(
-            animal
-        )
-        indirect_n2o = self.STORAGE_N2O_indirect(
-            animal
-        )
+        nex_storage = self.net_excretion_STORAGE(animal)
+        direct_n2o = self.STORAGE_N2O_direct(animal)
+        nh3_emissions = self.nh3_emissions_per_year_STORAGE(animal)
+        indirect_n2o = self.STORAGE_N2O_indirect(animal)
 
         return nex_storage - direct_n2o - nh3_emissions - indirect_n2o
 
-
-    def total_ammonia_nitrogen_nh4_SPREAD(self,
-        animal
-    ):
+    def total_ammonia_nitrogen_nh4_SPREAD(self, animal):
         """
         this function returns the total ammonia nitrogen (TAN) NH4 per year from daily spread
         """
         percentage_nex = 0.6
 
-        return (
-            self.net_excretion_SPREAD(
-                animal
-            )
-            * percentage_nex
-        )
-
+        return self.net_excretion_SPREAD(animal) * percentage_nex
 
     def SPREAD_N2O_direct(self, animal):
 
@@ -969,22 +852,15 @@ class DailySpread:
             "ram": self.loader_class.emissions_factors.get_ef_direct_n2o_emissions_soils(),
         }
 
-        return self.net_excretion_SPREAD(
-            animal
-        ) * n2o_direct.get(animal.cohort)
+        return self.net_excretion_SPREAD(animal) * n2o_direct.get(animal.cohort)
 
-
-    def nh3_emissions_per_year_SPREAD(self,
-        animal
-    ):
+    def nh3_emissions_per_year_SPREAD(self, animal):
 
         """
         this function returns nh3 emmissions per year from daily spreading
         """
 
-        nh4 = self.total_ammonia_nitrogen_nh4_SPREAD(
-            animal
-        )
+        nh4 = self.total_ammonia_nitrogen_nh4_SPREAD(animal)
 
         daily_spreading = {
             "none": self.loader_class.emissions_factors.get_ef_nh3_daily_spreading_none(),
@@ -996,10 +872,7 @@ class DailySpread:
 
         return nh4 * daily_spreading[animal.daily_spreading]
 
-
-    def leach_nitrogen_SPREAD(self,
-        animal
-    ):
+    def leach_nitrogen_SPREAD(self, animal):
 
         """
         This function returns the proportion of nitrogen leached from spreading
@@ -1008,34 +881,18 @@ class DailySpread:
 
         ten_percent_nex = 0.1
 
-        return (
-            self.net_excretion_SPREAD(
-                animal
-            )
-            * ten_percent_nex
-        )
+        return self.net_excretion_SPREAD(animal) * ten_percent_nex
 
-
-    def leach_phospherous_SPREAD(self, 
-        animal
-    ):
+    def leach_phospherous_SPREAD(self, animal):
 
         """
         This function returns the proportion of kg P leach per year *(1.8/5))*0.03
 
         """
 
-        return (
-            self.net_excretion_SPREAD(
-                animal
-            )
-            * (1.8 / 5)
-        ) * 0.03
+        return (self.net_excretion_SPREAD(animal) * (1.8 / 5)) * 0.03
 
-
-    def SPREAD_N2O_indirect(self,
-        animal
-    ):
+    def SPREAD_N2O_indirect(self, animal):
 
         """
         This functions returns indirect n2o from atmospheric deposition and leaching related to daily spread
@@ -1060,12 +917,8 @@ class DailySpread:
         indirect_atmosphere = atmospheric_deposition.get(animal.cohort)
         indirect_leaching = leaching.get(animal.cohort)
 
-        NH3 = self.nh3_emissions_per_year_SPREAD(
-            animal
-        )
-        NL = self.leach_nitrogen_SPREAD(
-            animal
-        )
+        NH3 = self.nh3_emissions_per_year_SPREAD(animal)
+        NL = self.leach_nitrogen_SPREAD(animal)
 
         return (NH3 * indirect_atmosphere) + (NL * indirect_leaching)
 
@@ -1077,7 +930,7 @@ class FertiliserInputs:
     def __init__(self, ef_country):
         self.loader_class = Loader(ef_country)
 
-    # Urea Fertiliser 
+    # Urea Fertiliser
     def urea_N2O_direct(self, total_urea, total_urea_abated):
 
         """
@@ -1089,7 +942,6 @@ class FertiliserInputs:
 
         return (total_urea * ef_urea) + (total_urea_abated * ef_urea_abated)
 
-
     def urea_NH3(self, total_urea, total_urea_abated):
 
         """
@@ -1097,11 +949,14 @@ class FertiliserInputs:
         Below is the original fraction used in the Costa Rica version, however this seems to be incorrect.
         FRAC=0.02 #FracGASF ammoinium-fertilisers [fraction of synthetic fertiliser N that volatilises as NH3 and NOx under different conditions]
         """
-        ef_urea = self.loader_class.emissions_factors.get_ef_fracGASF_urea_fertilisers_to_nh3_and_nox()
-        ef_urea_abated = self.loader_class.emissions_factors.get_ef_fracGASF_urea_and_nbpt_to_nh3_and_nox()
+        ef_urea = (
+            self.loader_class.emissions_factors.get_ef_fracGASF_urea_fertilisers_to_nh3_and_nox()
+        )
+        ef_urea_abated = (
+            self.loader_class.emissions_factors.get_ef_fracGASF_urea_and_nbpt_to_nh3_and_nox()
+        )
 
         return (total_urea * ef_urea) + (total_urea_abated * ef_urea_abated)
-
 
     def urea_nleach(self, total_urea, total_urea_abated):
 
@@ -1116,26 +971,20 @@ class FertiliserInputs:
 
         return (total_urea + total_urea_abated) * leach
 
-
     def urea_N2O_indirect(self, total_urea, total_urea_abated):
         """
         this function returns the idirect emissions from urea
         """
         indirect_atmosphere = (
             self.loader_class.emissions_factors.get_ef_indirect_n2o_atmospheric_deposition_to_soils_and_water()
-            
         )
-        indirect_leaching = self.loader_class.emissions_factors.get_ef_indirect_n2o_from_leaching_and_runoff()
-            
-
-        return (
-            self.urea_NH3(total_urea, total_urea_abated)
-            * indirect_atmosphere
-        ) + (
-            self.urea_nleach(total_urea, total_urea_abated)
-            * indirect_leaching
+        indirect_leaching = (
+            self.loader_class.emissions_factors.get_ef_indirect_n2o_from_leaching_and_runoff()
         )
 
+        return (self.urea_NH3(total_urea, total_urea_abated) * indirect_atmosphere) + (
+            self.urea_nleach(total_urea, total_urea_abated) * indirect_leaching
+        )
 
     def urea_co2(self, total_urea, total_urea_abated):
         """
@@ -1147,7 +996,6 @@ class FertiliserInputs:
             44 / 12
         )  # adjusted to the NIR version of this calculation
 
-
     def urea_P_leach(self, total_urea, total_urea_abated):
         """
         this function returns the idirect emissions from urea
@@ -1156,9 +1004,7 @@ class FertiliserInputs:
 
         return (total_urea + total_urea_abated) * frac_leach
 
-
     # Nitrogen Fertiliser Emissions
-
 
     def n_fertiliser_P_leach(self, total_n_fert):
         """
@@ -1168,7 +1014,6 @@ class FertiliserInputs:
 
         return total_n_fert * frac_leach
 
-
     def n_fertiliser_direct(self, total_n_fert):
 
         """
@@ -1177,15 +1022,15 @@ class FertiliserInputs:
         ef = self.loader_class.emissions_factors.get_ef_ammonium_nitrate()
         return total_n_fert * ef
 
-
     def n_fertiliser_NH3(self, total_n_fert):
 
         """
         This function returns total NH3 emissions from ammonium nitrate application at field level
         """
-        ef = self.loader_class.emissions_factors.get_ef_fracGASF_ammonium_fertilisers_to_nh3_and_nox()
+        ef = (
+            self.loader_class.emissions_factors.get_ef_fracGASF_ammonium_fertilisers_to_nh3_and_nox()
+        )
         return total_n_fert * ef
-
 
     def n_fertiliser_nleach(self, total_n_fert):
         """
@@ -1196,7 +1041,6 @@ class FertiliserInputs:
 
         return total_n_fert * ef
 
-
     def n_fertiliser_indirect(self, total_n_fert):
 
         """
@@ -1206,16 +1050,13 @@ class FertiliserInputs:
         indirect_atmosphere = (
             self.loader_class.emissions_factors.get_ef_indirect_n2o_atmospheric_deposition_to_soils_and_water()
         )
-        indirect_leaching = self.loader_class.emissions_factors.get_ef_indirect_n2o_from_leaching_and_runoff()
-
-        return (
-            self.n_fertiliser_NH3(total_n_fert)
-            * indirect_atmosphere
-        ) + (
-            self.n_fertiliser_nleach(total_n_fert)
-            * indirect_leaching
+        indirect_leaching = (
+            self.loader_class.emissions_factors.get_ef_indirect_n2o_from_leaching_and_runoff()
         )
 
+        return (self.n_fertiliser_NH3(total_n_fert) * indirect_atmosphere) + (
+            self.n_fertiliser_nleach(total_n_fert) * indirect_leaching
+        )
 
     def p_fertiliser_P_leach(self, total_p_fert):
         """
@@ -1231,6 +1072,7 @@ class FertiliserInputs:
 ################################################################################
 
 # Emissions from on Farm Fossil Fuels
+
 
 class Upstream:
     def __init__(self, ef_country):
@@ -1253,8 +1095,6 @@ class Upstream:
                 ) * animal.__getattribute__(key).pop
 
         return concentrate_co2 * 365
-    
-
 
     def diesel_CO2(self, diesel_kg):
 
@@ -1262,11 +1102,12 @@ class Upstream:
         this function returns the direct and indirect upstream CO2 emmisions from diesel
         """
 
-        Diesel_indir = self.loader_class.upstream.get_upstream_kg_co2e("diesel_indirect")
+        Diesel_indir = self.loader_class.upstream.get_upstream_kg_co2e(
+            "diesel_indirect"
+        )
         Diest_dir = self.loader_class.upstream.get_upstream_kg_co2e("diesel_direct")
 
         return diesel_kg * (Diest_dir + Diesel_indir)
-
 
     def elec_CO2(self, elec_kwh):
 
@@ -1278,7 +1119,6 @@ class Upstream:
             "electricity_consumed"
         )  # based on Norway hydropower
         return elec_kwh * elec_consumption
-
 
     # Emissions from upstream fertiliser production
     def fert_upstream_CO2(
@@ -1292,8 +1132,12 @@ class Upstream:
             "ammonium_nitrate_fertiliser"
         )  # Ammonium Nitrate Fertiliser
         Urea_fert_CO2 = self.loader_class.upstream.get_upstream_kg_co2e("urea_fert")
-        Triple_superphosphate = self.loader_class.upstream.get_upstream_kg_co2e("triple_superphosphate")
-        Potassium_chloride = self.loader_class.upstream.get_upstream_kg_co2e("potassium_chloride")
+        Triple_superphosphate = self.loader_class.upstream.get_upstream_kg_co2e(
+            "triple_superphosphate"
+        )
+        Potassium_chloride = self.loader_class.upstream.get_upstream_kg_co2e(
+            "potassium_chloride"
+        )
 
         return (
             (total_n_fert * AN_fert_CO2)
@@ -1302,7 +1146,6 @@ class Upstream:
             + (total_p_fert * Triple_superphosphate)
             + (total_k_fert * Potassium_chloride)
         )
-
 
     def fert_upstream_EP(
         self, total_n_fert, total_urea, total_urea_abated, total_p_fert, total_k_fert
@@ -1315,8 +1158,12 @@ class Upstream:
             "ammonium_nitrate_fertiliser"
         )  # Ammonium Nitrate Fertiliser
         Urea_fert_PO4 = self.loader_class.upstream.get_upstream_kg_po4e("urea_fert")
-        Triple_superphosphate = self.loader_class.upstream.get_upstream_kg_po4e("triple_superphosphate")
-        Potassium_chloride = self.loader_class.upstream.get_upstream_kg_po4e("potassium_chloride")
+        Triple_superphosphate = self.loader_class.upstream.get_upstream_kg_po4e(
+            "triple_superphosphate"
+        )
+        Potassium_chloride = self.loader_class.upstream.get_upstream_kg_po4e(
+            "potassium_chloride"
+        )
 
         return (
             (total_n_fert * AN_fert_PO4)
@@ -1331,7 +1178,6 @@ class Upstream:
 # Allocation
 ################################################################################
 class Allocation:
-
     def lamb_live_weight_output_value(self, animal):
 
         return (
@@ -1349,13 +1195,11 @@ class Allocation:
             )
         )
 
-
     def sheep_live_weight_output_value(self, animal):
 
-        return ((animal.ewes.weight * animal.ewes.n_sold) * animal.ewes.meat_price_kg) + (
-            (animal.ram.weight * animal.ram.n_sold) * animal.ram.meat_price_kg
-        )
-
+        return (
+            (animal.ewes.weight * animal.ewes.n_sold) * animal.ewes.meat_price_kg
+        ) + ((animal.ram.weight * animal.ram.n_sold) * animal.ram.meat_price_kg)
 
     def wool_output_value(self, animal):
 
@@ -1382,7 +1226,6 @@ class Allocation:
             )
         )
 
-
     def live_weight_bought(self, animal):
 
         return (
@@ -1393,7 +1236,6 @@ class Allocation:
             + (animal.ram.weight * animal.ram.n_bought)
         )
 
-
     def total_lamb_live_weight_kg(self, animal):
 
         return (
@@ -1402,13 +1244,11 @@ class Allocation:
             + (animal.male_less_1_yr.weight * animal.male_less_1_yr.n_sold)
         )
 
-
     def total_sheep_live_weight_kg(self, animal):
 
         return (animal.ewes.weight * animal.ewes.n_sold) + (
             animal.ram.weight * animal.ram.n_sold
         )
-
 
     def total_wool_weight_kg(self, animal):
 
@@ -1429,7 +1269,6 @@ class Allocation:
             + (animal.ram.wool * (animal.ram.pop - animal.ram.n_sold))
         )
 
-
     def lamb_allocation_factor(self, animal):
         total = (
             self.lamb_live_weight_output_value(animal)
@@ -1438,7 +1277,6 @@ class Allocation:
         )
         return self.lamb_live_weight_output_value(animal) / total
 
-
     def sheep_allocation_factor(self, animal):
         total = (
             self.lamb_live_weight_output_value(animal)
@@ -1446,7 +1284,6 @@ class Allocation:
             + self.wool_output_value(animal)
         )
         return self.sheep_live_weight_output_value(animal) / total
-
 
     def wool_allocation_factor(self, animal):
         total = (
@@ -1461,6 +1298,7 @@ class Allocation:
 # Total Global Warming Potential of whole farms
 ################################################################################
 
+
 class ClimateChangeTotals:
     def __init__(self, ef_country):
         self.cohorts_class = Cohorts()
@@ -1471,7 +1309,6 @@ class ClimateChangeTotals:
         self.storage_class = StorageStage(ef_country)
         self.fertiliser_class = FertiliserInputs(ef_country)
         self.upstream_class = Upstream(ef_country)
-        
 
     def create_emissions_dictionary(self, keys):
         key_list = [
@@ -1505,13 +1342,9 @@ class ClimateChangeTotals:
 
         return emissions_dict
 
-
     def Enteric_CH4(self, animal):
 
-        return self.grass_feed_class.ch4_emissions_factor(
-            animal
-        )
-
+        return self.grass_feed_class.ch4_emissions_factor(animal)
 
     def CH4_enteric_ch4(self, animal):
 
@@ -1519,37 +1352,35 @@ class ClimateChangeTotals:
 
         for key in animal.__dict__.keys():
 
-            if key in self.cohorts_class.COHORTS and animal.__getattribute__(key).pop != 0:
+            if (
+                key in self.cohorts_class.COHORTS
+                and animal.__getattribute__(key).pop != 0
+            ):
 
                 Enteric += (
-                    self.Enteric_CH4(
-                        animal.__getattribute__(key)
-                    )
+                    self.Enteric_CH4(animal.__getattribute__(key))
                     * animal.__getattribute__(key).pop
                 )
 
         return Enteric
 
-
-    def CH4_manure_management(self,
-        animal
-    ):
+    def CH4_manure_management(self, animal):
 
         result = 0
 
         for key in animal.__dict__.keys():
 
-            if key in self.cohorts_class.COHORTS and animal.__getattribute__(key).pop != 0:
+            if (
+                key in self.cohorts_class.COHORTS
+                and animal.__getattribute__(key).pop != 0
+            ):
 
                 result += (
-                    self.Total_manure_ch4(
-                        animal.__getattribute__(key)
-                    )
+                    self.Total_manure_ch4(animal.__getattribute__(key))
                     * animal.__getattribute__(key).pop
                 )
 
         return result
-    
 
     def PRP_Total(self, animal):
 
@@ -1560,53 +1391,48 @@ class ClimateChangeTotals:
 
         return self.grazing_class.PRP_N2O_direct(
             animal
-        ) + self.grazing_class.PRP_N2O_indirect(
-            animal
-        )
-
+        ) + self.grazing_class.PRP_N2O_indirect(animal)
 
     def Total_storage_N2O(self, animal):
 
-            """
-            This function returns the total N20 related to manure storage, no spreading included
+        """
+        This function returns the total N20 related to manure storage, no spreading included
 
 
-            """
-            mole_weight = 44.0 / 28.0
+        """
+        mole_weight = 44.0 / 28.0
 
-            n2o_direct = 0
-            n2o_indirect_storage = 0
-            n2o_indirect_housing = 0
+        n2o_direct = 0
+        n2o_indirect_storage = 0
+        n2o_indirect_housing = 0
 
-            for key in animal.__dict__.keys():
+        for key in animal.__dict__.keys():
 
-                if key in self.cohorts_class.COHORTS and animal.__getattribute__(key).pop != 0:
+            if (
+                key in self.cohorts_class.COHORTS
+                and animal.__getattribute__(key).pop != 0
+            ):
 
-                    n2o_direct += (
-                        self.storage_class.STORAGE_N2O_direct(
-                            animal.__getattribute__(key)
-                        )
-                        * animal.__getattribute__(key).pop
+                n2o_direct += (
+                    self.storage_class.STORAGE_N2O_direct(animal.__getattribute__(key))
+                    * animal.__getattribute__(key).pop
+                )
+                n2o_indirect_storage += (
+                    self.storage_class.STORAGE_N2O_indirect(
+                        animal.__getattribute__(key)
                     )
-                    n2o_indirect_storage += (
-                        self.storage_class.STORAGE_N2O_indirect(
-                            animal.__getattribute__(key)
-                        )
-                        * animal.__getattribute__(key).pop
+                    * animal.__getattribute__(key).pop
+                )
+                n2o_indirect_housing += (
+                    self.housing_class.HOUSING_N2O_indirect(
+                        animal.__getattribute__(key)
                     )
-                    n2o_indirect_housing += (
-                        self.housing_class.HOUSING_N2O_indirect(
-                            animal.__getattribute__(key)
-                        )
-                        * animal.__getattribute__(key).pop
-                    )
+                    * animal.__getattribute__(key).pop
+                )
 
-            return (n2o_direct + n2o_indirect_storage + n2o_indirect_housing) * mole_weight
+        return (n2o_direct + n2o_indirect_storage + n2o_indirect_housing) * mole_weight
 
-
-    def N2O_total_PRP_N2O_direct(self, 
-        animal
-    ):
+    def N2O_total_PRP_N2O_direct(self, animal):
 
         """
         this function returns the direct n2o emissions from pasture, range and paddock
@@ -1620,21 +1446,19 @@ class ClimateChangeTotals:
 
         for key in animal.__dict__.keys():
 
-            if key in self.cohorts_class.COHORTS and animal.__getattribute__(key).pop != 0:
+            if (
+                key in self.cohorts_class.COHORTS
+                and animal.__getattribute__(key).pop != 0
+            ):
 
                 PRP_direct += (
-                    self.grazing_class.PRP_N2O_direct(
-                        animal.__getattribute__(key)
-                    )
+                    self.grazing_class.PRP_N2O_direct(animal.__getattribute__(key))
                     * animal.__getattribute__(key).pop
                 )
 
         return PRP_direct * mole_weight
 
-
-    def N2O_total_PRP_N2O_indirect(self,
-        animal
-    ):
+    def N2O_total_PRP_N2O_indirect(self, animal):
 
         mole_weight = 44.0 / 28.0
 
@@ -1642,17 +1466,17 @@ class ClimateChangeTotals:
 
         for key in animal.__dict__.keys():
 
-            if key in self.cohorts_class.COHORTS and animal.__getattribute__(key).pop != 0:
+            if (
+                key in self.cohorts_class.COHORTS
+                and animal.__getattribute__(key).pop != 0
+            ):
 
                 PRP_indirect += (
-                    self.grazing_class.PRP_N2O_indirect(
-                        animal.__getattribute__(key)
-                    )
+                    self.grazing_class.PRP_N2O_indirect(animal.__getattribute__(key))
                     * animal.__getattribute__(key).pop
                 )
 
         return PRP_indirect * mole_weight
-
 
     def Total_manure_ch4(self, animal):
 
@@ -1664,22 +1488,17 @@ class ClimateChangeTotals:
             animal
         ) + self.storage_class.CH4_STORAGE(animal)
 
-
     def CO2_soils_GWP(self, total_urea, total_urea_abated):
         return self.fertiliser_class.urea_co2(total_urea, total_urea_abated)
 
-
-    def N2O_direct_fertiliser(
-        self, total_urea, total_urea_abated, total_n_fert
-    ):
+    def N2O_direct_fertiliser(self, total_urea, total_urea_abated, total_n_fert):
         """
         This function returns the total direct and indirect emissions from urea and ammonium fertilisers
         """
 
         result = (
             (
-                self.fertiliser_class.urea_N2O_direct(total_urea, total_urea_abated
-                )
+                self.fertiliser_class.urea_N2O_direct(total_urea, total_urea_abated)
                 + self.fertiliser_class.n_fertiliser_direct(total_n_fert)
             )
             * 44.0
@@ -1688,7 +1507,6 @@ class ClimateChangeTotals:
 
         return result
 
-
     def N2O_fertiliser_indirect(self, total_urea, total_urea_abated, total_n_fert):
         """
         This function returns the total direct and indirect emissions from urea and ammonium fertilisers
@@ -1696,8 +1514,7 @@ class ClimateChangeTotals:
 
         result = (
             (
-                self.fertiliser_class.urea_N2O_indirect(total_urea, total_urea_abated
-                )
+                self.fertiliser_class.urea_N2O_indirect(total_urea, total_urea_abated)
                 + self.fertiliser_class.n_fertiliser_indirect(total_n_fert)
             )
             * 44.0
@@ -1730,9 +1547,11 @@ class ClimateChangeTotals:
             + self.upstream_class.co2_from_concentrate_production(animal)
         )
 
+
 ###############################################################################
 # Water Quality EP PO4e
 ###############################################################################
+
 
 class EutrophicationTotals:
     def __init__(self, ef_country):
@@ -1745,9 +1564,7 @@ class EutrophicationTotals:
         self.fertiliser_class = FertiliserInputs(ef_country)
 
     # Manure Management
-    def total_manure_NH3_EP(self,
-        animal
-    ):
+    def total_manure_NH3_EP(self, animal):
         """
         Convert N to PO4  = 0.42
 
@@ -1760,7 +1577,10 @@ class EutrophicationTotals:
         NH3N = 0
 
         for key in animal.__dict__.keys():
-            if key in self.cohorts_class.COHORTS and animal.__getattribute__(key).pop != 0:
+            if (
+                key in self.cohorts_class.COHORTS
+                and animal.__getattribute__(key).pop != 0
+            ):
 
                 NH3N += (
                     self.storage_class.nh3_emissions_per_year_STORAGE(
@@ -1772,7 +1592,6 @@ class EutrophicationTotals:
                 ) * animal.__getattribute__(key).pop
 
         return (NH3N * indirect_atmosphere) * 0.42
-
 
     # SOILS
     def total_fertiliser_soils_NH3_and_LEACH_EP(
@@ -1790,7 +1609,8 @@ class EutrophicationTotals:
         )
 
         if total_urea != None or total_urea_abated != None or total_n_fert != None:
-            LEACH = self.fertiliser_class.urea_nleach(total_urea, total_urea_abated
+            LEACH = self.fertiliser_class.urea_nleach(
+                total_urea, total_urea_abated
             ) + self.fertiliser_class.n_fertiliser_nleach(total_n_fert)
             NH3N = self.fertiliser_class.urea_NH3(
                 total_urea, total_urea_abated
@@ -1798,10 +1618,7 @@ class EutrophicationTotals:
 
         return (NH3N * indirect_atmosphere) + LEACH * 0.42
 
-
-    def total_grazing_soils_NH3_and_LEACH_EP(self, 
-        animal
-    ):
+    def total_grazing_soils_NH3_and_LEACH_EP(self, animal):
         # No spreading for sheep
         LEACH = 0
         NH3N = 0
@@ -1811,7 +1628,10 @@ class EutrophicationTotals:
         )
 
         for key in animal.__dict__.keys():
-            if key in self.cohorts_class.COHORTS and animal.__getattribute__(key).pop != 0:
+            if (
+                key in self.cohorts_class.COHORTS
+                and animal.__getattribute__(key).pop != 0
+            ):
                 NH3N += (
                     self.grazing_class.nh3_emissions_per_year_GRAZING(
                         animal.__getattribute__(key)
@@ -1822,14 +1642,11 @@ class EutrophicationTotals:
                 # Leach from grazing, none from spread for sheep
 
                 LEACH += (
-                    self.grazing_class.Nleach_GRAZING(
-                        animal.__getattribute__(key)
-                    )
+                    self.grazing_class.Nleach_GRAZING(animal.__getattribute__(key))
                     * animal.__getattribute__(key).pop
                 )
 
         return (NH3N * indirect_atmosphere) + LEACH * 0.42
-
 
     def fertiliser_soils_P_LEACH_EP(
         self, total_urea, total_urea_abated, total_n_fert, total_p_fert
@@ -1844,62 +1661,61 @@ class EutrophicationTotals:
 
         return PLEACH * 3.06
 
-
-    def grazing_soils_P_LEACH_EP(self,
-        animal
-    ):
+    def grazing_soils_P_LEACH_EP(self, animal):
 
         PLEACH = 0
 
         for key in animal.__dict__.keys():
-            if key in self.cohorts_class.COHORTS and animal.__getattribute__(key).pop != 0:
+            if (
+                key in self.cohorts_class.COHORTS
+                and animal.__getattribute__(key).pop != 0
+            ):
 
                 # Just leach from grazing, not from manure application
                 PLEACH += (
-                    self.grazing_class.PLeach_GRAZING(
-                        animal.__getattribute__(key)
-                    )
+                    self.grazing_class.PLeach_GRAZING(animal.__getattribute__(key))
                     * animal.__getattribute__(key).pop
                 )
 
         return PLEACH * 3.06
 
-
-    def total_fertilser_soils_EP(self,
+    def total_fertilser_soils_EP(
+        self,
         total_urea,
         total_urea_abated,
         total_n_fert,
         total_p_fert,
     ):
 
-        return self.total_fertiliser_soils_NH3_and_LEACH_EP(total_urea, total_urea_abated, total_n_fert
-        ) + self.fertiliser_soils_P_LEACH_EP(total_urea, total_urea_abated, total_n_fert, total_p_fert
+        return self.total_fertiliser_soils_NH3_and_LEACH_EP(
+            total_urea, total_urea_abated, total_n_fert
+        ) + self.fertiliser_soils_P_LEACH_EP(
+            total_urea, total_urea_abated, total_n_fert, total_p_fert
         )
 
-
-    def total_grazing_soils_EP(self,
-        animal
-    ):
+    def total_grazing_soils_EP(self, animal):
 
         return self.total_grazing_soils_NH3_and_LEACH_EP(
             animal
-        ) + self.grazing_soils_P_LEACH_EP(
-            animal
-        )
-
+        ) + self.grazing_soils_P_LEACH_EP(animal)
 
     # Imported Feeds
-    def EP_from_concentrate_production(animal, concentrates):
+    def EP_from_concentrate_production(self, animal):
 
         concentrate_p = 0
 
         for key in animal.__dict__.keys():
 
-            if key in COHORTS and animal.__getattribute__(key).pop != 0:
+            if (
+                key in self.cohorts_class.COHORTS
+                and animal.__getattribute__(key).pop != 0
+            ):
 
                 concentrate_p += (
                     animal.__getattribute__(key).con_amount
-                    * concentrates.get_con_po4_e(animal.__getattribute__(key).con_type)
+                    * self.loader_class.concentrates.get_con_po4_e(
+                        animal.__getattribute__(key).con_type
+                    )
                 ) * animal.__getattribute__(key).pop
 
         return concentrate_p * 365
@@ -1908,6 +1724,7 @@ class EutrophicationTotals:
 ###############################################################################
 # Air Quality Ammonia
 ###############################################################################
+
 
 class AirQualityTotals:
     def __init__(self, ef_country):
@@ -1921,14 +1738,15 @@ class AirQualityTotals:
         self.upstream_class = Upstream(ef_country)
 
     # Manure Management
-    def total_manure_NH3_AQ(self,
-        animal
-    ):
+    def total_manure_NH3_AQ(self, animal):
 
         NH3N = 0
 
         for key in animal.__dict__.keys():
-            if key in self.cohorts_class.COHORTS and animal.__getattribute__(key).pop != 0:
+            if (
+                key in self.cohorts_class.COHORTS
+                and animal.__getattribute__(key).pop != 0
+            ):
 
                 NH3N += (
                     self.storage_class.nh3_emissions_per_year_STORAGE(
@@ -1941,27 +1759,28 @@ class AirQualityTotals:
 
         return NH3N
 
-
     # SOILS
-    def total_fertiliser_soils_NH3_AQ(self, total_urea, total_urea_abated, total_n_fert
+    def total_fertiliser_soils_NH3_AQ(
+        self, total_urea, total_urea_abated, total_n_fert
     ):
 
-        NH3N = self.fertiliser_class.urea_NH3(total_urea, total_urea_abated
+        NH3N = self.fertiliser_class.urea_NH3(
+            total_urea, total_urea_abated
         ) + self.fertiliser_class.n_fertiliser_NH3(total_n_fert)
 
         return NH3N
 
-
-    def total_grazing_soils_NH3_AQ(self,
-        animal
-    ):
+    def total_grazing_soils_NH3_AQ(self, animal):
 
         # No emissions from spreading for sheep
 
         NH3N = 0
 
         for key in animal.__dict__.keys():
-            if key in self.cohorts_class.COHORTS and animal.__getattribute__(key).pop != 0:
+            if (
+                key in self.cohorts_class.COHORTS
+                and animal.__getattribute__(key).pop != 0
+            ):
                 NH3N += (
                     self.grazing_class.nh3_emissions_per_year_GRAZING(
                         animal.__getattribute__(key)

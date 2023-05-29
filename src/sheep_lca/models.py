@@ -41,6 +41,7 @@ class AnimalCategory(DynamicData):
 
         super(AnimalCategory, self).__init__(data, defaults)
 
+
 class AnimalCollection(DynamicData):
     def __init__(self, data):
         super(AnimalCollection, self).__init__(data)
@@ -141,6 +142,7 @@ class Animal_Features(object):
             return True
         else:
             return False
+
 
 #######################################################################################
 
@@ -480,6 +482,7 @@ class Emissions_Factors(object):
         else:
             return False
 
+
 #######################################################################################
 
 
@@ -536,6 +539,7 @@ class Grass(object):
         else:
             return False
 
+
 #######################################################################################
 # concentrate file class
 ########################################################################################
@@ -577,9 +581,10 @@ class Concentrate(object):
 
         # Pre-compute averages
         self.concentrates["average"] = {
-            "con_dry_matter_digestibility": self.average("con_dry_matter_digestibility"
+            "con_dry_matter_digestibility": self.average(
+                "con_dry_matter_digestibility"
             ),
-            "con_digestible_energy": self.average( "con_digestible_energy"),
+            "con_digestible_energy": self.average("con_digestible_energy"),
             "con_crude_protein": self.average("con_crude_protein"),
         }
 
@@ -597,12 +602,13 @@ class Concentrate(object):
 
     def get_con_co2_e(self, concentrate):
         return self.concentrates.get(concentrate).get("con_co2_e")
-    
+
     def is_loaded(self):
         if self.data_frame is not None:
             return True
         else:
             return False
+
 
 ########################################################################################
 # Upstream class
@@ -656,6 +662,8 @@ class Upstream(object):
             return True
         else:
             return False
+
+
 #############################################################################################
 
 
