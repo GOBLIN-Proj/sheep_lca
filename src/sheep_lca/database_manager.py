@@ -12,7 +12,7 @@ class DataManager:
 
     def data_engine_creater(self):
         database_path = os.path.abspath(
-            os.path.join(self.database_dir, "cattle_database.db")
+            os.path.join(self.database_dir, "sheep_database.db")
         )
         engine_url = f"sqlite:///{database_path}"
 
@@ -49,7 +49,7 @@ class DataManager:
         return dataframe
 
     def emissions_factor_data(self, index=None):
-        table = "emissions_factors_database"
+        table = "sheep_emissions_factors_database"
 
         if index == None:
             dataframe = pd.read_sql(
@@ -82,7 +82,7 @@ class DataManager:
         return dataframe
 
     def animal_features_data(self, index=None):
-        table = "animal_features_database"
+        table = "sheep_animal_features_database"
 
         if index == None:
             dataframe = pd.read_sql(
