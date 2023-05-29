@@ -1,5 +1,5 @@
-from cattle_lca.database_manager import DataManager
-from cattle_lca.models import (
+from sheep_lca.database_manager import DataManager
+from sheep_lca.models import (
     Animal_Features,
     Grass,
     Concentrate,

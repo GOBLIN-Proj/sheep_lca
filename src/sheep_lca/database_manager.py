@@ -1,6 +1,6 @@
 import sqlalchemy as sqa
 import pandas as pd
-from cattle_lca.database import get_local_dir
+from sheep_lca.database import get_local_dir
 import os
 
 

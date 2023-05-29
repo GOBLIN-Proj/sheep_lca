@@ -1,5 +1,6 @@
 # IMPORTS
 from sheep_lca.data_loader import Loader
+import copy 
 
 class Cohorts:
     def __init__(self) -> None:
@@ -382,8 +383,8 @@ class GrassFeed:
         # print(Ym)
         methane_energy = 55.65  # MJ/kg of CH4
 
-        GEC = self.gross_energy_from_concentrate(animal)
-        GEG = self.gross_energy_from_grass(
+        GEC = self.energy_class.gross_energy_from_concentrate(animal)
+        GEG = self.energy_class.gross_energy_from_grass(
             animal
         )
 
@@ -426,8 +427,8 @@ class GrazingStage:
         UE = 0.04
         ASH = 0.08
         DMD = self.loader_class.grass.get_forage_dry_matter_digestibility(animal.forage)
-        GEC = self.gross_energy_from_concentrate(animal)
-        GEG = self.gross_energy_from_grass(
+        GEC = self.energy_class.gross_energy_from_concentrate(animal)
+        GEG = self.energy_class.gross_energy_from_grass(
             animal
         )
         OUT = self.percent_outdoors(animal)
@@ -452,8 +453,8 @@ class GrazingStage:
             animal.con_type
         )  # crude protein percentage (N contained in crude protein), apparently, 16% is the average N content; https://www.feedipedia.org/node/8329
         FCP = self.loader_class.grass.get_crude_protein(animal.forage)
-        GEC = self.gross_energy_from_concentrate(animal)
-        GEG = self.gross_energy_from_grass(
+        GEC = self.energy_class.gross_energy_from_concentrate(animal)
+        GEG = self.energy_class.gross_energy_from_grass(
             animal
         )
         OUT = self.percent_outdoors(animal)
@@ -644,8 +645,8 @@ class HousingStage:
         UE = 0.04
         ASH = 0.08
         DMD = self.loader_class.grass.get_forage_dry_matter_digestibility(animal.forage)
-        GEC = self.gross_energy_from_concentrate(animal)
-        GEG = self.gross_energy_from_grass(
+        GEC = self.energy_class.gross_energy_from_concentrate(animal)
+        GEG = self.energy_class.gross_energy_from_grass(
             animal
         )
         IN = self.percent_indoors(animal)
@@ -672,8 +673,8 @@ class HousingStage:
             animal.con_type
         )  # crude protein percentage (N contained in crude protein), apparently, 16% is the average N content; https://www.feedipedia.org/node/8329
         FCP = self.loader_class.grass.get_crude_protein(animal.forage)
-        GEC = self.gross_energy_from_concentrate(animal)
-        GEG = self.gross_energy_from_grass(
+        GEC = self.energy_class.gross_energy_from_concentrate(animal)
+        GEG = self.energy_class.gross_energy_from_grass(
             animal
         )
 
@@ -777,9 +778,9 @@ class StorageStage:
         This function returns kg of Nex per year from storage
         """
 
-        return self.net_excretion_HOUSED(
+        return self.housing_class.net_excretion_HOUSED(
             animal
-        ) - self.nh3_emissions_per_year_HOUSED(
+        ) - self.housing_class.nh3_emissions_per_year_HOUSED(
             animal
         )
 
@@ -824,7 +825,7 @@ class StorageStage:
         }
 
         return (
-            self.VS_HOUSED(animal) * 365
+            self.housing_class.VS_HOUSED(animal) * 365
         ) * (0.1 * 0.67 * storage_MCF[animal.mm_storage])
 
 
@@ -1116,7 +1117,7 @@ class FertiliserInputs:
         return (total_urea + total_urea_abated) * leach
 
 
-    def urea_N2O_indirect(self, total_urea, total_urea_abated, emissions_factors):
+    def urea_N2O_indirect(self, total_urea, total_urea_abated):
         """
         this function returns the idirect emissions from urea
         """
@@ -1124,7 +1125,7 @@ class FertiliserInputs:
             self.loader_class.emissions_factors.get_ef_indirect_n2o_atmospheric_deposition_to_soils_and_water()
             
         )
-        indirect_leaching = emissions_factors.get_ef_indirect_n2o_from_leaching_and_runoff()
+        indirect_leaching = self.loader_class.emissions_factors.get_ef_indirect_n2o_from_leaching_and_runoff()
             
 
         return (
@@ -1470,11 +1471,44 @@ class ClimateChangeTotals:
         self.storage_class = StorageStage(ef_country)
         self.fertiliser_class = FertiliserInputs(ef_country)
         self.upstream_class = Upstream(ef_country)
+        
+
+    def create_emissions_dictionary(self, keys):
+        key_list = [
+            "enteric_ch4",
+            "manure_management_N2O",
+            "manure_management_CH4",
+            "manure_applied_N",
+            "N_direct_PRP",
+            "N_direct_PRP",
+            "N_indirect_PRP",
+            "N_direct_fertiliser",
+            "N_indirect_fertiliser",
+            "soils_CO2",
+            "soil_organic_N_direct",
+            "soil_organic_N_indirect",
+            "soil_inorganic_N_direct",
+            "soil_inorganic_N_indirect",
+            "soil_N_direct",
+            "soil_N_indirect",
+            "soils_N2O",
+        ]
+
+        keys_dict = dict.fromkeys(keys)
+
+        emissions_dict = dict.fromkeys(key_list)
+
+        for key in emissions_dict.keys():
+            emissions_dict[key] = copy.deepcopy(keys_dict)
+            for inner_k in keys_dict.keys():
+                emissions_dict[key][inner_k] = 0
+
+        return emissions_dict
 
 
     def Enteric_CH4(self, animal):
 
-        return self.grass_feed_class.ch4_emissions_factor(self,
+        return self.grass_feed_class.ch4_emissions_factor(
             animal
         )
 
@@ -1626,9 +1660,9 @@ class ClimateChangeTotals:
         this function returns the total ch4 related to manure storage
         """
 
-        return self.ch4_emissions_for_grazing(
+        return self.grazing_class.ch4_emissions_for_grazing(
             animal
-        ) + self.CH4_STORAGE(animal)
+        ) + self.storage_class.CH4_STORAGE(animal)
 
 
     def CO2_soils_GWP(self, total_urea, total_urea_abated):
@@ -1655,9 +1689,7 @@ class ClimateChangeTotals:
         return result
 
 
-    def N2O_indirect_fertiliser(
-        self, total_urea, total_urea_abated, total_n_fert, emissions_factors
-    ):
+    def N2O_fertiliser_indirect(self, total_urea, total_urea_abated, total_n_fert):
         """
         This function returns the total direct and indirect emissions from urea and ammonium fertilisers
         """
