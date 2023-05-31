@@ -1,6 +1,6 @@
 # 🐏 Sheep_lca, a lifecycle assessment tool for sheep livestock systems
 
- Based on the [GOBLIN](https://gmd.copernicus.org/articles/15/2239/2022/) (**G**eneral **O**verview for a **B**ackcasting approach of **L**ivestock **IN**tensification) LifeCycle Analysis tool, the Cattle_lca module decouples this module making it an independent distribution package.
+ Based on the [GOBLIN](https://gmd.copernicus.org/articles/15/2239/2022/) (**G**eneral **O**verview for a **B**ackcasting approach of **L**ivestock **IN**tensification) LifeCycle Analysis tool, the Sheep_lca module decouples this module making it an independent distribution package.
 
  The package is shipped with key data for emissions factors, concentrate feed inputs, animal features, grassland parameters and upstream emissions. 
 
