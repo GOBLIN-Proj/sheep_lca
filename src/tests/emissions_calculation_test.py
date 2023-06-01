@@ -208,7 +208,7 @@ class DatasetLoadingTestCase(unittest.TestCase):
             past_farms[past_farm_loc].total_urea_abated,
         )
 
-        self.emissions_dict["upstream"][
+        self.emissions_dict["upstream_fuel_fert"][
             self.baseline_index
         ] += self.climatechange.upstream_and_inputs_and_fuel_co2(
             past_farms[past_farm_loc].diesel_kg,
@@ -218,7 +218,12 @@ class DatasetLoadingTestCase(unittest.TestCase):
             past_farms[past_farm_loc].total_urea_abated,
             past_farms[past_farm_loc].total_p_fert,
             past_farms[past_farm_loc].total_k_fert,
-            past_animals[past_animals_loc]["animals"],
+        )
+
+        self.emissions_dict["upstream_feed"][
+            self.baseline_index
+        ] += self.climatechange.co2_from_concentrate_production(
+            past_animals[past_animals_loc]["animals"]
         )
 
         # Totals
@@ -251,6 +256,12 @@ class DatasetLoadingTestCase(unittest.TestCase):
             self.emissions_dict["soil_N_direct"][self.baseline_index]
             + self.emissions_dict["soil_N_indirect"][self.baseline_index]
         )
+
+        self.emissions_dict["upstream"][self.baseline_index]  = (
+            self.emissions_dict["upstream_fuel_fert"][self.baseline_index] 
+            + self.emissions_dict["upstream_feed"][self.baseline_index] 
+        )
+        
 
         print(self.emissions_dict)
 
