@@ -1079,6 +1079,7 @@ class Upstream:
         self.loader_class = Loader(ef_country)
         self.cohorts_class = Cohorts()
 
+
     def co2_from_concentrate_production(self, animal):
         concentrate_co2 = 0
 
@@ -1096,6 +1097,27 @@ class Upstream:
 
         return concentrate_co2 * 365
 
+
+        # Imported Feeds
+    def po4_from_concentrate_production(self, animal):
+        concentrate_p = 0
+
+        for key in animal.__dict__.keys():
+            if (
+                key in self.cohorts_class.COHORTS
+                and animal.__getattribute__(key).pop != 0
+            ):
+                concentrate_p += (
+                    animal.__getattribute__(key).con_amount
+                    * self.loader_class.concentrates.get_con_po4_e(
+                        animal.__getattribute__(key).con_type
+                    )
+                ) * animal.__getattribute__(key).pop
+
+        return concentrate_p * 365
+
+
+
     def diesel_CO2(self, diesel_kg):
 
         """
@@ -1106,6 +1128,19 @@ class Upstream:
             "diesel_indirect"
         )
         Diest_dir = self.loader_class.upstream.get_upstream_kg_co2e("diesel_direct")
+
+        return diesel_kg * (Diest_dir + Diesel_indir)
+    
+
+    def diesel_PO4(self, diesel_kg):
+        """
+        this function returns the direct and indirect upstream PO4 emmisions from diesel
+        """
+
+        Diesel_indir = self.loader_class.upstream.get_upstream_kg_po4e(
+            "diesel_indirect"
+        )
+        Diest_dir = self.loader_class.upstream.get_upstream_kg_po4e("diesel_direct")
 
         return diesel_kg * (Diest_dir + Diesel_indir)
 
@@ -1119,6 +1154,18 @@ class Upstream:
             "electricity_consumed"
         )  # based on Norway hydropower
         return elec_kwh * elec_consumption
+
+
+    def elec_PO4(self, elec_kwh):
+        """
+        this functino returns the upstream CO2 emissions from electricity consumption
+        """
+
+        elec_consumption = self.loader_class.upstream.get_upstream_kg_po4e(
+            "electricity_consumed"
+        )  # based on Norway hydropower
+        return elec_kwh * elec_consumption
+    
 
     # Emissions from upstream fertiliser production
     def fert_upstream_CO2(
@@ -1341,6 +1388,42 @@ class ClimateChangeTotals:
                 emissions_dict[key][inner_k] = 0
 
         return emissions_dict
+    
+
+    def create_expanded_emissions_dictionary(self, keys):
+
+        key_list = [
+            "enteric_ch4",
+            "manure_management_N2O",
+            "manure_management_CH4",
+            "manure_applied_N",
+            "N_direct_PRP",
+            "N_direct_PRP",
+            "N_indirect_PRP",
+            "N_direct_fertiliser",
+            "N_indirect_fertiliser",
+            "soils_CO2",
+            "soil_organic_N_direct",
+            "soil_organic_N_indirect",
+            "soil_inorganic_N_direct",
+            "soil_inorganic_N_indirect",
+            "soil_N_direct",
+            "soil_N_indirect",
+            "soils_N2O",
+            "upstream",
+        ]
+
+        keys_dict = dict.fromkeys(keys)
+
+        emissions_dict = dict.fromkeys(key_list)
+
+        for key in emissions_dict.keys():
+            emissions_dict[key] = copy.deepcopy(keys_dict)
+            for inner_k in keys_dict.keys():
+                emissions_dict[key][inner_k] = 0
+
+        return emissions_dict
+    
 
     def Enteric_CH4(self, animal):
 
@@ -1431,6 +1514,7 @@ class ClimateChangeTotals:
                 )
 
         return (n2o_direct + n2o_indirect_storage + n2o_indirect_housing) * mole_weight
+    
 
     def N2O_total_PRP_N2O_direct(self, animal):
 
@@ -1562,6 +1646,45 @@ class EutrophicationTotals:
         self.storage_class = StorageStage(ef_country)
         self.spread_class = DailySpread(ef_country)
         self.fertiliser_class = FertiliserInputs(ef_country)
+        self.upstream_class = Upstream(ef_country)
+    
+    def create_emissions_dictionary(self, keys):
+
+        key_list = [
+            "manure_management",
+            "soils",
+        ]
+
+        keys_dict = dict.fromkeys(keys)
+
+        emissions_dict = dict.fromkeys(key_list)
+
+        for key in emissions_dict.keys():
+            emissions_dict[key] = copy.deepcopy(keys_dict)
+            for inner_k in keys_dict.keys():
+                emissions_dict[key][inner_k] = 0
+
+        return emissions_dict
+    
+
+    def create_expanded_emissions_dictionary(self, keys):
+
+        key_list = [
+            "manure_management",
+            "soils",
+            "upstream",
+        ]
+
+        keys_dict = dict.fromkeys(keys)
+
+        emissions_dict = dict.fromkeys(key_list)
+
+        for key in emissions_dict.keys():
+            emissions_dict[key] = copy.deepcopy(keys_dict)
+            for inner_k in keys_dict.keys():
+                emissions_dict[key][inner_k] = 0
+
+        return emissions_dict
 
     # Manure Management
     def total_manure_NH3_EP(self, animal):
@@ -1699,27 +1822,29 @@ class EutrophicationTotals:
             animal
         ) + self.grazing_soils_P_LEACH_EP(animal)
 
-    # Imported Feeds
-    def EP_from_concentrate_production(self, animal):
 
-        concentrate_p = 0
-
-        for key in animal.__dict__.keys():
-
-            if (
-                key in self.cohorts_class.COHORTS
-                and animal.__getattribute__(key).pop != 0
-            ):
-
-                concentrate_p += (
-                    animal.__getattribute__(key).con_amount
-                    * self.loader_class.concentrates.get_con_po4_e(
-                        animal.__getattribute__(key).con_type
-                    )
-                ) * animal.__getattribute__(key).pop
-
-        return concentrate_p * 365
-
+    def upstream_and_inputs_and_fuel_po4(
+        self,
+        diesel_kg,
+        elec_kwh,
+        total_n_fert,
+        total_urea,
+        total_urea_abated,
+        total_p_fert,
+        total_k_fert,
+        animal,
+    ):
+        return (
+            self.upstream_class.diesel_PO4(diesel_kg)
+            + self.upstream_class.elec_CO2(elec_kwh)
+            + self.upstream_class.fert_upstream_CO2(
+                total_n_fert,
+                total_urea,
+                total_urea_abated,
+                total_p_fert,
+                total_k_fert,
+            )
+            + self.upstream_class.po4_from_concentrate_production(animal))
 
 ###############################################################################
 # Air Quality Ammonia
@@ -1736,6 +1861,26 @@ class AirQualityTotals:
         self.spread_class = DailySpread(ef_country)
         self.fertiliser_class = FertiliserInputs(ef_country)
         self.upstream_class = Upstream(ef_country)
+
+
+    def create_emissions_dictionary(self, keys):
+
+        key_list = [
+            "manure_management",
+            "soils",
+        ]
+
+        keys_dict = dict.fromkeys(keys)
+
+        emissions_dict = dict.fromkeys(key_list)
+
+        for key in emissions_dict.keys():
+            emissions_dict[key] = copy.deepcopy(keys_dict)
+            for inner_k in keys_dict.keys():
+                emissions_dict[key][inner_k] = 0
+
+        return emissions_dict
+    
 
     # Manure Management
     def total_manure_NH3_AQ(self, animal):

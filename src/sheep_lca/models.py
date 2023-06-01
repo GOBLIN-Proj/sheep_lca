@@ -274,6 +274,8 @@ class Emissions_Factors(object):
             ef_fracGASF_ammonium_fertilisers_to_nh3_and_nox = row.get(
                 "ef_fracGASF_ammonium_fertilisers_to_nh3_and_nox"
             )
+            Frac_P_Leach = row.get("Frac_P_Leach")
+
 
             self.emissions_factors = {
                 "ef_net_energy_for_maintenance_sheep_up_to_a_year": ef_net_energy_for_maintenance_sheep_up_to_a_year,
@@ -321,6 +323,7 @@ class Emissions_Factors(object):
                 "ef_frac_leach_runoff": ef_frac_leach_runoff,
                 "ef_ammonium_nitrate": ef_ammonium_nitrate,
                 "ef_fracGASF_ammonium_fertilisers_to_nh3_and_nox": ef_fracGASF_ammonium_fertilisers_to_nh3_and_nox,
+                "ef_Frac_P_Leach": Frac_P_Leach,
             }
 
     def get_ef_net_energy_for_maintenance_sheep_up_to_a_year(self):
@@ -476,6 +479,9 @@ class Emissions_Factors(object):
             "ef_fracGASF_ammonium_fertilisers_to_nh3_and_nox"
         )
 
+    def get_ef_Frac_P_Leach(self):
+        return self.emissions_factors.get("ef_Frac_P_Leach")
+
     def is_loaded(self):
         if self.data_frame is not None:
             return True
@@ -570,6 +576,7 @@ class Concentrate(object):
             con_cp = row.get("con_crude_protein")
             con_gross_energy = row.get("gross_energy_mje_dry_matter")
             con_co2_e = row.get("con_co2_e")
+            con_po4_e = row.get("con_po4_e")
 
             self.concentrates[con_type] = {
                 "con_dry_matter_digestibility": con_dmd,
@@ -577,6 +584,7 @@ class Concentrate(object):
                 "con_crude_protein": con_cp,
                 "gross_energy_mje_dry_matter": con_gross_energy,
                 "con_co2_e": con_co2_e,
+                "con_po4_e": con_po4_e,
             }
 
         # Pre-compute averages
@@ -602,6 +610,10 @@ class Concentrate(object):
 
     def get_con_co2_e(self, concentrate):
         return self.concentrates.get(concentrate).get("con_co2_e")
+
+    def get_con_po4_e(self, concentrate):
+        return self.concentrates.get(concentrate).get("con_po4_e")
+    
 
     def is_loaded(self):
         if self.data_frame is not None:
