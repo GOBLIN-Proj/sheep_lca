@@ -331,14 +331,14 @@ class GrassFeed:
 
         DMD = self.loader_class.grass.get_forage_dry_matter_digestibility(animal.forage)
 
-        REM = self.ratio_of_net_energy_maintenance(animal)
-        REG = self.ratio_of_net_energy_growth(animal)
-        NEM = self.net_energy_for_maintenance(animal)
-        NEA = self.net_energy_for_activity(animal)
-        NEL = self.net_energy_for_lactation(animal)
-        NEP = self.net_energy_for_pregnancy(animal)
-        NEG = self.net_energy_for_weight_gain(animal)
-        con = self.gross_energy_from_concentrate(animal)
+        REM = self.energy_class.ratio_of_net_energy_maintenance(animal)
+        REG = self.energy_class.ratio_of_net_energy_growth(animal)
+        NEM = self.energy_class.net_energy_for_maintenance(animal)
+        NEA = self.energy_class.net_energy_for_activity(animal)
+        NEL = self.energy_class.net_energy_for_lactation(animal)
+        NEP = self.energy_class.net_energy_for_pregnancy(animal)
+        NEG = self.energy_class.net_energy_for_weight_gain(animal)
+        con = self.energy_class.gross_energy_from_concentrate(animal)
         GE = self.loader_class.grass.get_gross_energy_mje_dry_matter(animal.forage)
         dm = self.loader_class.concentrates.get_con_dry_matter_digestibility(
             animal.con_type
