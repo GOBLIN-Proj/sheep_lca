@@ -252,6 +252,10 @@ class Energy:
 
         return (animal.con_amount * dm / 100) * mj
 
+    def concentrate_needs(self, animal):
+
+        return animal.con_amount
+
     ##REMI ADDED Functions
     def gross_amount_from_con_in_percent(self, animal, share_in_percent):
 
