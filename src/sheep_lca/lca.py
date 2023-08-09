@@ -388,7 +388,6 @@ class GrassFeed:
                 self.loader_class.emissions_factors.get_ef_methane_conversion_factor_sheep()
             )
 
-        # print(Ym)
         methane_energy = 55.65  # MJ/kg of CH4
 
         GEC = self.energy_class.gross_energy_from_concentrate(animal)
