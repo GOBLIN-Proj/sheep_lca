@@ -275,6 +275,8 @@ class Emissions_Factors(object):
                 "ef_fracGASF_ammonium_fertilisers_to_nh3_and_nox"
             )
             Frac_P_Leach = row.get("Frac_P_Leach")
+            ef_urea_co2 = row.get("ef_urea_co2")
+            ef_lime_co2 = row.get("ef_lime_co2")
 
 
             self.emissions_factors = {
@@ -324,6 +326,8 @@ class Emissions_Factors(object):
                 "ef_ammonium_nitrate": ef_ammonium_nitrate,
                 "ef_fracGASF_ammonium_fertilisers_to_nh3_and_nox": ef_fracGASF_ammonium_fertilisers_to_nh3_and_nox,
                 "ef_Frac_P_Leach": Frac_P_Leach,
+                "ef_urea_co2":ef_urea_co2,
+                "ef_lime_co2":ef_lime_co2,
             }
 
     def get_ef_net_energy_for_maintenance_sheep_up_to_a_year(self):
