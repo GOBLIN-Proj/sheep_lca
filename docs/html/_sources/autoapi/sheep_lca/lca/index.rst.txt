@@ -1,0 +1,1882 @@
+:py:mod:`sheep_lca.lca`
+=======================
+
+.. py:module:: sheep_lca.lca
+
+.. autoapi-nested-parse::
+
+   Sheep LCA Module
+   ------------------
+
+   This module contains classes and methods for calculating the environmental impact of sheep farming, including energy requirements,
+   emissions, and waste management. It covers various stages of sheep lifecycle and farm operations such as grazing, housing, manure management,
+   and fertilization practices. The module aims to provide a comprehensive assessment tool for understanding and reducing the environmental
+   footprint associated with sheep production.
+
+   The module includes detailed assessments of greenhouse gas emissions, eutrophication potential, air quality impacts, and
+   resource usage to support sustainable farming practices and decision-making. By integrating data from various sources and
+   applying region-specific (Ireland) emission factors, the module helps in evaluating the overall environmental performance of sheep farms.
+
+   Key Features:
+   - Calculation of energy consumption and efficiency in sheep farming.
+   - Estimation of greenhouse gas emissions from enteric fermentation, manure management, and other farm activities.
+   - Assessment of nutrient runoff and its impact on eutrophication.
+   - Evaluation of ammonia emissions and their contribution to air quality issues.
+   - Analysis of upstream impacts related to feed production, fertilizer use, and other inputs.
+
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   sheep_lca.lca.Energy
+   sheep_lca.lca.GrassFeed
+   sheep_lca.lca.GrazingStage
+   sheep_lca.lca.HousingStage
+   sheep_lca.lca.StorageStage
+   sheep_lca.lca.DailySpread
+   sheep_lca.lca.FertiliserInputs
+   sheep_lca.lca.Upstream
+   sheep_lca.lca.Allocation
+   sheep_lca.lca.ClimateChangeTotals
+   sheep_lca.lca.EutrophicationTotals
+   sheep_lca.lca.AirQualityTotals
+
+
+
+
+.. py:class:: Energy(ef_country)
+
+
+   A class for calculating various energy needs and outputs for sheep in different stages of their lifecycle and production phases.
+
+   Attributes:
+   - data_manager_class (LCADataManager): Manages and provides access to relevant LCA data based on the specific country's environmental factors and agricultural practices.
+
+   Methods:
+   - ratio_of_net_energy_maintenance(animal): Calculates the ratio of net energy needed for maintenance (REM) of sheep.
+   - ratio_of_net_energy_growth(animal): Calculates the ratio of net energy for growth (REG) of sheep.
+   - net_energy_for_maintenance(animal): Estimates the net energy required for the maintenance of sheep based on their body weight and energy coefficients.
+   - net_energy_for_activity(animal): Determines the energy expended by sheep for their physical activities based on their grazing patterns.
+   - net_energy_for_weight_gain(animal): Computes the net energy used for weight gain in sheep, essential for growing lambs and breeding ewes.
+   - net_energy_for_lactation(animal): Calculates the energy required for lactation, critical for nursing ewes.
+   - net_energy_for_wool(animal): Estimates the energy utilized for wool production, pertinent for wool breeds.
+   - net_energy_for_pregnancy(animal): Assesses the energy needs for pregnant ewes.
+   - gross_energy_from_concentrate(animal): Evaluates the total energy derived from concentrate feeds provided to the sheep.
+   - gross_amount_from_con_in_percent(animal, share_in_percent): Estimates the proportion of energy intake from concentrates compared to the total diet.
+   - gross_energy_from_grass(animal): Calculates the total energy intake from grass, the primary forage source for grazing sheep.
+
+
+   .. py:method:: ratio_of_net_energy_maintenance(animal)
+
+      Calculates the Ratio of Net Energy for Maintenance (REM) for sheep, considering their specific diet.
+
+      Parameters:
+      - animal (Sheep): The sheep cohort under evaluation.
+
+      Returns:
+      - float: The ratio of energy available for maintenance after accounting for the digestible energy from the diet.
+
+
+
+   .. py:method:: ratio_of_net_energy_growth(animal)
+
+      Calculates the Ratio of Net Energy for Growth (REG) for sheep, taking into account the total energy consumed.
+
+      Parameters:
+      - animal (Sheep): The sheep cohort under evaluation.
+
+      Returns:
+      - float: The ratio of energy available for growth, important for lambs and growing sheep.
+
+
+
+   .. py:method:: net_energy_for_maintenance(animal)
+
+      Estimates the net energy required for maintaining the basic life functions of sheep based on their weight.
+
+      Parameters:
+      - animal (Sheep): The sheep under evaluation.
+
+      Returns:
+      - float: Total energy required for maintenance expressed in MJ/day.
+
+
+
+   .. py:method:: net_energy_for_activity(animal)
+
+      Determines the energy expended by sheep for their physical activities based on typical grazing and movement patterns.
+
+      Parameters:
+      - animal (Sheep): The sheep under evaluation.
+
+      Returns:
+      - float: Additional energy expended for activities, in MJ/day.
+
+
+
+   .. py:method:: net_energy_for_weight_gain(animal)
+
+      Computes the net energy utilized for weight gain, considering the typical growth rates of sheep.
+
+      Parameters:
+      - animal (Sheep): The sheep under evaluation.
+
+      Returns:
+      - float: Energy used for growth in MJ/day.
+
+
+
+   .. py:method:: net_energy_for_lactation(animal)
+
+      Calculates the energy required for lactation.
+
+      Parameters:
+      - animal (Sheep): The lactating ewe under evaluation.
+
+      Returns:
+      - float: Energy needed for producing milk, expressed in MJ/day.
+
+
+
+   .. py:method:: net_energy_for_wool(animal)
+
+      Estimates the energy used for wool production.
+
+      Parameters:
+      - animal (Sheep): The wool-producing sheep under evaluation.
+
+      Returns:
+      - float: Energy allocated for wool growth, in MJ/day.
+
+
+
+   .. py:method:: net_energy_for_pregnancy(animal)
+
+      Assesses the additional energy requirements for pregnant ewes.
+
+      Parameters:
+      - animal (Sheep): The pregnant ewe under evaluation.
+
+      Returns:
+      - float: Additional energy required for supporting pregnancy, in MJ/day.
+
+
+
+   .. py:method:: gross_energy_from_concentrate(animal)
+
+      Evaluates the total energy derived from concentrate feeds.
+
+      Parameters:
+      - animal (Sheep): The sheep consuming the concentrate.
+
+      Returns:
+      - float: Total energy derived from concentrate feed, in MJ.
+
+      Note:
+      - Concentrates are often used to supplement grazing, especially in intensive farming systems.
+
+
+   .. py:method:: gross_amount_from_con_in_percent(animal, share_in_percent)
+
+      Estimates the total energy intake for sheep based on a specified percentage of concentrate in their diet,
+      taking into account the energy from both grass and concentrate.
+
+      Parameters:
+      - animal (Sheep): The sheep under evaluation.
+      - share_in_percent (float): The percentage of the diet that is made up of concentrate.
+
+      Returns:
+      - float: Total gross energy intake from the diet, factoring in the specified percentage of concentrate, expressed in Megajoules (MJ).
+
+      Note:
+      - This method integrates all energy components including maintenance, activity, lactation, pregnancy, and growth to calculate the overall energy intake.
+
+
+   .. py:method:: gross_energy_from_grass(animal)
+
+      Calculates the total gross energy intake from grass for sheep after considering the energy provided by concentrates.
+
+      Parameters:
+      - animal (Sheep): The sheep under evaluation.
+
+      Returns:
+      - float: Total gross energy intake from grass, after subtracting the energy supplied by concentrates, expressed in Megajoules (MJ).
+
+      Note:
+      - This calculation takes into account the energy for maintenance, activity, lactation, pregnancy, growth, and wool production, adjusted for the energy supplied by concentrates.
+
+
+
+.. py:class:: GrassFeed(ef_country)
+
+
+   This class is responsible for managing the nutritional energy calculations for grass-fed livestock,
+   integrating various energy needs such as maintenance, growth, and reproduction, and calculating the methane emissions
+   factor from the animals' feed intake.
+
+   .. attribute:: energy_class
+
+      Instance of the Energy class to access energy-related calculations.
+
+      :type: Energy
+
+   .. attribute:: data_manager_class
+
+      Instance of the LCADataManager class for accessing livestock and environmental parameters.
+
+      :type: LCADataManager
+
+   .. method:: dry_matter_from_grass
+
+      Estimates the amount of dry matter consumed from grass after accounting for the energy provided by concentrates.
+
+   .. method:: ch4_emissions_factor
+
+      Calculates the methane emissions factor based on the animal's total energy intake from grass and concentrates.
+      
+
+   .. py:method:: dry_matter_from_grass(animal)
+
+      Estimates the amount of dry matter consumed from grass by the animal, factoring in the energy contributions from both grass and concentrates.
+
+      Parameters:
+      - animal (Animal): The animal for which the dry matter intake is being calculated.
+
+      Returns:
+      - float: Total dry matter consumed from grass, expressed in kg/day.
+
+      Note:
+      - This calculation integrates various energy needs of the animal, such as maintenance, activity, lactation, pregnancy, and growth, and adjusts for the energy supplied by concentrates.
+
+
+   .. py:method:: ch4_emissions_factor(animal)
+
+      Calculates the methane emissions factor for the animal based on its total energy intake from both grass and concentrates. This factor is used to estimate the methane emissions from feed intake.
+
+      Parameters:
+      - animal (Animal): The animal for which the methane emissions factor is being calculated.
+
+      Returns:
+      - float: Methane emissions factor, expressed in kg CH4/year.
+
+      Note:
+      - This calculation follows the IPCC 2019 guidelines and considers the specific methane conversion factor for the animal category.
+      - For lambs, a different conversion factor is used as per NIR 2020 adjustments.
+
+
+
+      IPCC 2019 EQUATION 10.21
+
+      As per NIR 2020, lambs have an assumed Ym of 4.5 instead of 6.7 as per IPCC.
+
+          GEC = Gross Energy from Concentrates
+          GEG = Gross Energy from GE_grass
+          GET = Gross Energy total
+          Ym  = Methane conversion factor, percent of gross energy content of methane
+
+
+
+.. py:class:: GrazingStage(ef_country)
+
+
+   The GrazingStage class calculates various metrics related to the environmental impact of grazing animals.
+   This includes the volatile solids excretion rate to pasture, net nitrogen excretion, methane emissions from grazing, ammonia emissions,
+   nitrogen and phosphorus leaching, and direct and indirect N2O emissions from pasture.
+
+   .. attribute:: energy_class
+
+      Energy
+      An instance of the Energy class, used for calculations involving energy metrics of animals.
+
+   .. attribute:: grass_feed_class
+
+      GrassFeed
+      An instance of the GrassFeed class, used to calculate energy intake from grasses.
+
+   .. attribute:: data_manager_class
+
+      LCADataManager
+      An instance of the LCADataManager class, used to access data necessary for the calculations.
+
+   .. method:: percent_outdoors(animal)
+
+      
+      Calculates the percentage of time an animal spends outdoors based on its time outdoors attribute.
+
+   .. method:: volatile_solids_excretion_rate_GRAZING(animal)
+
+      
+      Calculates the rate at which volatile solids are excreted to pasture by the animal.
+
+   .. method:: net_excretion_GRAZING(animal)
+
+      
+      Calculates the net nitrogen excretion per kilogram to pasture by the animal.
+
+   .. method:: ch4_emissions_for_grazing(animal)
+
+      
+      Estimates the methane emissions from the animal excretion while grazing.
+
+   .. method:: nh3_emissions_per_year_GRAZING(animal)
+
+      
+      Calculates the total ammonia emissions per year from the animal while grazing.
+
+   .. method:: Nleach_GRAZING(animal)
+
+      
+      Estimates the amount of nitrogen leached from the pasture due to the grazing animal.
+
+   .. method:: PLeach_GRAZING(animal)
+
+      
+      Estimates the amount of phosphorus leached from the pasture due to the grazing animal.
+
+   .. method:: PRP_N2O_direct(animal)
+
+      
+      Calculates the direct nitrous oxide emissions from pasture, range, and paddock due to the grazing animal.
+
+   .. method:: PRP_N2O_indirect(animal)
+
+      
+      Calculates the indirect nitrous oxide emissions from atmospheric deposition and leaching related to pasture,
+      range, and paddock due to the grazing animal.
+      
+      
+
+   .. py:method:: percent_outdoors(animal)
+
+      Calculates the percentage of the day that the animal spends outdoors.
+
+      Parameters:
+      - animal (object): The animal object containing relevant data such as time spent outdoors.
+
+      Returns:
+      - float: The percentage of the day the animal spends outdoors.
+
+
+   .. py:method:: volatile_solids_excretion_rate_GRAZING(animal)
+
+      Calculates the rate at which volatile solids are excreted to pasture by the animal, an essential factor in assessing the environmental impact of grazing.
+
+      Parameters:
+      - animal (object): The animal for which the volatile solids excretion rate is calculated.
+
+      Returns:
+      - float: The rate of volatile solids excretion to pasture (kg/day).
+
+      Note:
+      - This calculation considers the digestibility of both concentrate and grass, the urinary energy, and the ash content of the manure.
+      - 'GEC' represents the gross energy from concentrates consumed by the animal.
+      - 'GEG' denotes the gross energy from grass consumed.
+      - 'DE' stands for the percentage of digestible energy from the consumed feed.
+      - 'UE' refers to the energy lost through urination.
+      - 'ASH' represents the incombustible inorganic matter present in the animal's waste.
+      - The calculation adjusts for the time the animal spends outdoors ('OUT'), influencing the amount of waste directly deposited onto pasture.
+      - The constant '18.45' is used as a conversion factor for dietary gross energy per kilogram of dry matter, expressed in MJ kg-1.
+
+
+   .. py:method:: net_excretion_GRAZING(animal)
+
+      Calculates the net nitrogen excretion per kilogram to pasture by grazing animals.
+
+      Parameters:
+      - animal (object): The animal for which the calculation is performed.
+
+      Returns:
+      - float: Net nitrogen excretion per kilogram to pasture by the animal.
+
+
+
+   .. py:method:: ch4_emissions_for_grazing(animal)
+
+      Estimates the methane emissions resulting from the animal's excretion while grazing.
+
+      Parameters:
+      - animal (object): The animal for which the methane emissions are estimated.
+
+      Returns:
+      - float: Estimated methane emissions from grazing, measured in kilograms per year.
+
+      Note:
+      The estimation follows the IPCC 2019 methodology and adjusts for animal size and time spent outdoors.
+
+
+   .. py:method:: nh3_emissions_per_year_GRAZING(animal)
+
+      Calculates total annual ammonia emissions from grazing animals.
+
+      Parameters:
+      - animal (object): The animal for which the ammonia emissions are calculated.
+
+      Returns:
+      - float: Total ammonia emissions from grazing, measured over a year.
+
+      Note:
+      This calculation is based on net nitrogen excretion and the time the animal spends grazing.
+
+
+   .. py:method:: Nleach_GRAZING(animal)
+
+      Estimates the amount of nitrogen leached from the pasture as a result of the grazing animal's activities.
+
+      Parameters:
+      - animal (object): The animal for which nitrogen leaching is being estimated.
+
+      Returns:
+      - float: Estimated nitrogen leached from the pasture, as a percentage of total nitrogen excretion.
+
+
+
+   .. py:method:: PLeach_GRAZING(animal)
+
+      Estimates the amount of phosphorus leached from the pasture due to the animal's grazing.
+
+      Parameters:
+      - animal (object): The animal for which phosphorus leaching is estimated.
+
+      Returns:
+      - float: Estimated phosphorus leached from the pasture.
+
+
+
+   .. py:method:: PRP_N2O_direct(animal)
+
+      Calculates direct nitrous oxide (N2O) emissions from pasture, range, and paddock (PRP) attributable to the grazing animal.
+
+      Parameters:
+      - animal (object): The animal for which the direct N2O emissions are calculated.
+
+      Returns:
+      - float: Direct N2O emissions from PRP due to the grazing animal.
+
+      Note:
+      Applies IPCC guidelines for direct N2O emissions from animal excretion on pasture.
+
+
+   .. py:method:: PRP_N2O_indirect(animal)
+
+      Calculates indirect N2O emissions from atmospheric deposition and leaching related to pasture, range, and paddock due to grazing animals.
+
+      Parameters:
+      - animal (object): The grazing animal for which the indirect N2O emissions are estimated.
+
+      Returns:
+      - float: Indirect N2O emissions from PRP attributable to the animal.
+
+      Note:
+      Indirect emissions are calculated based on ammonia emissions and nitrogen leaching, following IPCC guidelines.
+
+
+
+.. py:class:: HousingStage(ef_country)
+
+
+   The HousingStage class calculates various environmental impacts related to the housing of animals. This includes the calculation of volatile solids excretion, nitrogen excretion, ammonia emissions, and indirect nitrous oxide emissions during the period when animals are housed.
+
+   Parameters:
+   - ef_country: A country-specific factor that might affect the environmental calculations.
+
+   Methods:
+   - percent_indoors(animal): Calculates the percentage of time animals spend indoors.
+   - VS_HOUSED(animal): Calculates the volatile solids excreted per day when animals are housed.
+   - net_excretion_HOUSED(animal): Calculates the nitrogen excreted per year while animals are housed.
+   - total_ammonia_nitrogen_nh4_HOUSED(animal): Calculates the total ammonia nitrogen excreted per year while housed.
+   - nh3_emissions_per_year_HOUSED(animal): Calculates the total ammonia emissions per year from housing.
+   - HOUSING_N2O_indirect(animal): Calculates indirect nitrous oxide emissions from housing.
+
+   .. py:method:: percent_indoors(animal)
+
+      Calculates the percentage of time that the animal spends indoors, combining time spent indoors and stabled.
+
+      :param - animal: The animal instance for which the indoor time percentage is calculated.
+      :type - animal: object
+
+      :returns: The percentage of the day that the animal spends indoors.
+      :rtype: - float
+
+
+   .. py:method:: VS_HOUSED(animal)
+
+      Calculates the volatile solids excreted per day for animals during the period they are housed. This measurement is essential for understanding the potential environmental impact of manure produced indoors.
+
+      :param - animal: The animal instance for which the calculation is made.
+      :type - animal: object
+
+      :returns: The volatile solids excretion rate (kg/day) when animals are housed.
+      :rtype: - float
+
+      .. note::
+
+         The calculation incorporates the energy from concentrates and grass, digestibility, urinary energy, ash content of manure, and time spent indoors. It provides insight into the potential for nutrient runoff and emissions from stored manure.
+         
+         Volitile Solids Excretion Rate (kg/day -1)
+         GEcon = Gross Energy from Concentrates
+         GEgrass = Gross Energy from grass
+         DE= Percentage of Digestible Energy
+         UE = Urinary Energy
+         ASH = Ash content of manure
+         18.45 = conversion factor for dietary GE per kg of dry matter, MJ kg-1.
+
+
+   .. py:method:: net_excretion_HOUSED(animal)
+
+      Calculates the amount of nitrogen excreted per year by housed animals.
+
+      :param - animal: The animal instance for which the calculation is made.
+      :type - animal: object
+
+      :returns: The amount of nitrogen (kg) excreted per year while animals are housed.
+      :rtype: - float
+
+      .. note:: The higher rate compared to other models may result from using IPCC equations that account for a broader range of energy ratios.
+
+
+   .. py:method:: total_ammonia_nitrogen_nh4_HOUSED(animal)
+
+      Calculates the total ammonia nitrogen (TAN) produced per year from animals housed.
+
+      :param animal: The animal instance for which the calculation is made.
+      :type animal: object
+
+      :returns: Total amount of ammonia nitrogen (TAN) produced per year, in kilograms.
+      :rtype: float
+
+      .. note:: The calculation assumes that TAN constitutes 60% of the total nitrogen excreted (Nex).
+
+
+   .. py:method:: nh3_emissions_per_year_HOUSED(animal)
+
+      Estimates the total ammonia (NH3) emissions per year from housing based on the total ammonia nitrogen (TAN) produced
+      and the specific management system in place.
+
+      :param animal: The animal instance for which the calculation is made.
+      :type animal: object
+
+      :returns: Total ammonia emissions per year, in kilograms.
+      :rtype: float
+
+      .. note::
+
+         The method utilizes emission factors from IPCC 2019 guidelines and adjustments from the
+         National Inventory Report (NIR) 2020 to account for the management of sheep manure.
+
+
+   .. py:method:: HOUSING_N2O_indirect(animal)
+
+      Calculates indirect nitrous oxide (N2O) emissions from housing by considering ammonia (NH3) emissions and their atmospheric deposition.
+
+      :param animal: The animal instance for which the calculation is made.
+      :type animal: object
+
+      :returns: Indirect N2O emissions per year, in kilograms.
+      :rtype: float
+
+      .. note:: This method uses the emission factor for indirect atmospheric deposition to calculate N2O emissions resulting from the volatilization of NH3 from housed animal manure.
+
+
+
+.. py:class:: StorageStage(ef_country)
+
+
+   .. py:method:: net_excretion_STORAGE(animal)
+
+      Calculates the net nitrogen excretion from storage by accounting for the reduction in nitrogen due to ammonia volatilization from housing.
+
+      :param animal: The animal instance for which the calculation is made.
+      :type animal: object
+
+      :returns: Net nitrogen excretion from storage, in kilograms per year.
+      :rtype: float
+
+
+   .. py:method:: total_ammonia_nitrogen_nh4_STORAGE(animal)
+
+      Calculates the total ammonia nitrogen (TAN) produced per year in storage based on net nitrogen excretion.
+
+      :param animal: The animal instance for which the calculation is made.
+      :type animal: object
+
+      :returns: Total ammonia nitrogen produced per year in storage, in kilograms.
+      :rtype: float
+
+
+   .. py:method:: CH4_STORAGE(animal)
+
+      Estimates the total methane (CH4) emissions per year from manure storage.
+
+      :param animal: The animal instance for which the calculation is made.
+      :type animal: object
+
+      :returns: Methane emissions from manure storage per year, in kilograms.
+      :rtype: float
+
+
+   .. py:method:: STORAGE_N2O_direct(animal)
+
+      Calculates the direct nitrous oxide (N2O) emissions from nitrogen in manure storage.
+
+      :param animal: The animal instance for which the calculation is made.
+      :type animal: object
+
+      :returns: Direct nitrous oxide emissions from manure storage per year, in kilograms.
+      :rtype: float
+
+
+   .. py:method:: nh3_emissions_per_year_STORAGE(animal)
+
+      Estimates annual ammonia (NH3) emissions from manure storage based on total ammonia nitrogen production.
+
+      :param animal: The animal instance for which the calculation is made.
+      :type animal: object
+
+      :returns: Ammonia emissions from manure storage per year, in kilograms.
+      :rtype: float
+
+
+   .. py:method:: STORAGE_N2O_indirect(animal)
+
+      Calculates indirect nitrous oxide (N2O) emissions from atmospheric deposition related to ammonia volatilization in storage.
+
+      :param animal: The animal instance for which the calculation is made.
+      :type animal: object
+
+      :returns: Indirect nitrous oxide emissions from storage per year, in kilograms.
+      :rtype: float
+
+
+
+.. py:class:: DailySpread(ef_country)
+
+
+   The DailySpread class focuses on the environmental impact of spreading stored manure on fields, including calculations for net nitrogen
+   excretion, ammonia nitrogen, direct and indirect nitrous oxide emissions, and nitrogen and phosphorus leaching. It's important to note
+   that while this functionality is provided, solid manure from sheep is often not spread to pasture in Ireland.
+
+   .. attribute:: data_manager_class
+
+      Provides access to necessary data for calculations.
+
+      :type: LCADataManager
+
+   .. attribute:: storage_class
+
+      Allows access to calculations from the storage stage for use in spreading calculations.
+
+      :type: StorageStage
+
+   .. method:: net_excretion_SPREAD(animal)
+
+      Calculates the net nitrogen excretion from daily spreading.
+
+   .. method:: total_ammonia_nitrogen_nh4_SPREAD(animal)
+
+      Calculates total ammonia nitrogen from daily spreading.
+
+   .. method:: SPREAD_N2O_direct(animal)
+
+      Estimates direct nitrous oxide emissions from daily spreading.
+
+   .. method:: nh3_emissions_per_year_SPREAD(animal)
+
+      Estimates annual ammonia emissions from daily spreading.
+
+   .. method:: leach_nitrogen_SPREAD(animal)
+
+      Estimates the amount of nitrogen leached from daily spreading.
+
+   .. method:: leach_phosphorous_SPREAD(animal)
+
+      Estimates the amount of phosphorus leached from daily spreading.
+
+   .. method:: SPREAD_N2O_indirect(animal)
+
+      Calculates indirect nitrous oxide emissions from daily spreading.
+      
+
+   .. py:method:: net_excretion_SPREAD(animal)
+
+      Calculates the net nitrogen excretion from spreading, accounting for nitrogen loss in storage and emissions.
+
+      :param animal: The animal instance for which the calculation is made.
+      :type animal: object
+
+      :returns: Net nitrogen excretion from daily spreading, in kilograms per year.
+      :rtype: float
+
+
+   .. py:method:: total_ammonia_nitrogen_nh4_SPREAD(animal)
+
+      Calculates the total ammonia nitrogen (TAN) produced from daily spreading.
+
+      :param animal: The animal instance for which the calculation is made.
+      :type animal: object
+
+      :returns: Total ammonia nitrogen produced from daily spreading, in kilograms per year.
+      :rtype: float
+
+
+   .. py:method:: SPREAD_N2O_direct(animal)
+
+      Estimates the direct nitrous oxide (N2O) emissions from daily spreading.
+
+      :param animal: The animal instance for which the calculation is made.
+      :type animal: object
+
+      :returns: Direct nitrous oxide emissions from daily spreading, in kilograms per year.
+      :rtype: float
+
+
+   .. py:method:: nh3_emissions_per_year_SPREAD(animal)
+
+      Estimates annual ammonia (NH3) emissions from daily spreading.
+
+      :param animal: The animal instance for which the calculation is made.
+      :type animal: object
+
+      :returns: Ammonia emissions from daily spreading, in kilograms per year.
+      :rtype: float
+
+
+   .. py:method:: leach_nitrogen_SPREAD(animal)
+
+      Estimates the amount of nitrogen leached due to daily spreading.
+
+      :param animal: The animal instance for which the calculation is made.
+      :type animal: object
+
+      :returns: Nitrogen leached from daily spreading, in kilograms per year.
+      :rtype: float
+
+
+   .. py:method:: leach_phospherous_SPREAD(animal)
+
+      Estimates the amount of phosphorus leached due to daily spreading.
+
+      :param animal: The animal instance for which the calculation is made.
+      :type animal: object
+
+      :returns: Phosphorus leached from daily spreading, in kilograms per year.
+      :rtype: float
+
+
+   .. py:method:: SPREAD_N2O_indirect(animal)
+
+      Calculates indirect nitrous oxide (N2O) emissions from atmospheric deposition and leaching related to daily spreading.
+
+      :param animal: The animal instance for which the calculation is made.
+      :type animal: object
+
+      :returns: Indirect nitrous oxide emissions from daily spreading, in kilograms per year.
+      :rtype: float
+
+
+
+.. py:class:: FertiliserInputs(ef_country)
+
+
+   Handles the calculations related to the environmental impact of fertiliser inputs, including urea and ammonium nitrate fertilisers.
+   It calculates direct and indirect nitrous oxide emissions, ammonia volatilisation, leaching, and carbon dioxide emissions from the
+   application of fertilisers and lime.
+
+   .. attribute:: data_manager_class
+
+      Provides access to necessary data for calculations.
+
+      :type: LCADataManager
+
+   .. method:: urea_N2O_direct
+
+      Calculates direct N2O emissions from urea application.
+
+   .. method:: urea_NH3
+
+      Estimates ammonia volatilised from urea application.
+
+   .. method:: urea_nleach
+
+      Calculates nitrogen leached from urea application.
+
+   .. method:: urea_N2O_indirect
+
+      Calculates indirect N2O emissions from urea application.
+
+   .. method:: urea_co2
+
+      Estimates CO2 emissions from urea application.
+
+   .. method:: lime_co2
+
+      Estimates CO2 emissions from lime application.
+
+   .. method:: urea_P_leach
+
+      Calculates phosphorus leached from urea application.
+
+   .. method:: n_fertiliser_P_leach
+
+      Calculates phosphorus leached from nitrogen fertiliser application.
+
+   .. method:: n_fertiliser_direct
+
+      Calculates direct N2O emissions from ammonium nitrate fertiliser application.
+
+   .. method:: n_fertiliser_NH3
+
+      Estimates ammonia volatilised from ammonium nitrate fertiliser application.
+
+   .. method:: n_fertiliser_nleach
+
+      Calculates nitrogen leached from ammonium nitrate fertiliser application.
+
+   .. method:: n_fertiliser_indirect
+
+      Calculates indirect N2O emissions from ammonium nitrate fertiliser application.
+
+   .. method:: p_fertiliser_P_leach
+
+      Calculates phosphorus leached from phosphorus fertiliser application.
+      
+
+   .. py:method:: urea_N2O_direct(total_urea, total_urea_abated)
+
+      Calculates the direct N2O emissions from the application of urea and urea treated with nitrification inhibitors (abated urea) to soils.
+
+      :param total_urea: The total amount of urea applied, in kilograms.
+      :type total_urea: float
+      :param total_urea_abated: The total amount of abated urea applied, in kilograms.
+      :type total_urea_abated: float
+
+      :returns: Total direct N2O emissions from urea and abated urea application, in kilograms.
+      :rtype: float
+
+
+   .. py:method:: urea_NH3(total_urea, total_urea_abated)
+
+      Estimates the amount of NH3 volatilized from both standard and abated urea applications.
+
+      :param total_urea: Total amount of urea applied (kg).
+      :type total_urea: float
+      :param total_urea_abated: Total amount of abated urea applied (kg).
+      :type total_urea_abated: float
+
+      :returns: Total NH3 emissions (kg).
+      :rtype: float
+
+
+   .. py:method:: urea_nleach(total_urea, total_urea_abated)
+
+      Calculates the amount of urea and abated urea leached from soils after application.
+
+      :param total_urea: Total amount of urea applied (kg).
+      :type total_urea: float
+      :param total_urea_abated: Total amount of abated urea applied (kg).
+      :type total_urea_abated: float
+
+      :returns: Total leached urea (kg).
+      :rtype: float
+
+
+   .. py:method:: urea_N2O_indirect(total_urea, total_urea_abated)
+
+      Calculates indirect emissions from urea and abated urea application, considering atmospheric deposition and leaching.
+
+      :param total_urea: Total amount of urea applied (kg).
+      :type total_urea: float
+      :param total_urea_abated: Total amount of abated urea applied (kg).
+      :type total_urea_abated: float
+
+      :returns: Total indirect N2O emissions (kg).
+      :rtype: float
+
+
+   .. py:method:: urea_co2(total_urea)
+
+      Calculates the total CO2 emissions resulting from the application of urea.
+
+      :param total_urea: Total amount of urea applied (kg).
+      :type total_urea: float
+
+      :returns: Total CO2 emissions (kg).
+      :rtype: float
+
+
+   .. py:method:: lime_co2(total_lime)
+
+      Calculates total CO2 emissions from the application of lime.
+
+      :param total_lime: Total amount of lime applied (kg).
+      :type total_lime: float
+
+      :returns: Total CO2 emissions from lime application (kg).
+      :rtype: float
+
+
+   .. py:method:: urea_P_leach(total_urea, total_urea_abated)
+
+      Calculates the amount of phosphorus leached from urea and abated urea application.
+
+      :param total_urea: Total amount of urea applied (kg).
+      :type total_urea: float
+      :param total_urea_abated: Total amount of abated urea applied (kg).
+      :type total_urea_abated: float
+
+      :returns: Total phosphorus leached (kg).
+      :rtype: float
+
+
+   .. py:method:: n_fertiliser_P_leach(total_n_fert)
+
+      Calculates the amount of phosphorus leached due to the application of nitrogen fertilisers.
+
+      :param total_n_fert: Total amount of nitrogen fertiliser applied (kg).
+      :type total_n_fert: float
+
+      :returns: Total phosphorus leached due to nitrogen fertiliser application (kg).
+      :rtype: float
+
+
+   .. py:method:: n_fertiliser_direct(total_n_fert)
+
+      Calculates direct N2O emissions resulting from the application of nitrogen fertilisers at field level.
+
+      :param total_n_fert: Total amount of nitrogen fertiliser applied (kg).
+      :type total_n_fert: float
+
+      :returns: Total direct N2O emissions from nitrogen fertiliser application (kg).
+      :rtype: float
+
+
+   .. py:method:: n_fertiliser_NH3(total_n_fert)
+
+      Calculates total NH3 emissions resulting from the application of nitrogen fertilisers at field level.
+
+      :param total_n_fert: Total amount of nitrogen fertiliser applied (kg).
+      :type total_n_fert: float
+
+      :returns: Total NH3 emissions from nitrogen fertiliser application (kg).
+      :rtype: float
+
+
+   .. py:method:: n_fertiliser_nleach(total_n_fert)
+
+      Calculates the total nitrogen leached from the application of nitrogen fertilisers at field level.
+
+      :param total_n_fert: Total amount of nitrogen fertiliser applied (kg).
+      :type total_n_fert: float
+
+      :returns: Total nitrogen leached from nitrogen fertiliser application (kg).
+      :rtype: float
+
+
+   .. py:method:: n_fertiliser_indirect(total_n_fert)
+
+      Calculates the indirect N2O emissions from the use of nitrogen fertilisers, accounting for atmospheric deposition and leaching.
+
+      :param total_n_fert: Total amount of nitrogen fertiliser applied (kg).
+      :type total_n_fert: float
+
+      :returns: Total indirect N2O emissions from nitrogen fertiliser application (kg).
+      :rtype: float
+
+
+   .. py:method:: total_fertiliser_N20(total_urea, total_urea_abated, total_n_fert)
+
+      Returns the total N2O emissions, both direct and indirect, from the application of both urea and ammonium nitrate fertilisers.
+
+      :param total_urea: Total amount of urea applied (kg).
+      :type total_urea: float
+      :param total_urea_abated: Total amount of abated urea applied (kg).
+      :type total_urea_abated: float
+      :param total_n_fert: Total amount of nitrogen fertiliser applied (kg).
+      :type total_n_fert: float
+
+      :returns: Total N2O emissions from all fertiliser applications (kg).
+      :rtype: float
+
+
+   .. py:method:: p_fertiliser_P_leach(total_p_fert)
+
+      Calculates the amount of phosphorus leached due to the application of phosphorus fertilisers.
+
+      :param total_p_fert: Total amount of phosphorus fertiliser applied (kg).
+      :type total_p_fert: float
+
+      :returns: Total phosphorus leached from phosphorus fertiliser application (kg).
+      :rtype: float
+
+
+
+.. py:class:: Upstream(ef_country)
+
+
+   Handles the calculation of upstream emissions related to concentrate production, diesel usage, and electricity consumption
+   for the environmental impact assessment of sheep farming operations. It focuses on CO2 and PO4 emissions from various
+   sources including fertiliser production, diesel fuel, and electricity used in farm operations.
+
+   .. attribute:: data_manager_class
+
+      Provides access to necessary data for calculations.
+
+      :type: LCADataManager
+
+   .. method:: co2_from_concentrate_production
+
+      Calculates CO2 emissions from concentrate production for sheep.
+
+   .. method:: po4_from_concentrate_production
+
+      Calculates PO4 emissions from concentrate production for sheep.
+
+   .. method:: diesel_CO2
+
+      Estimates CO2 emissions from diesel fuel usage.
+
+   .. method:: diesel_PO4
+
+      Estimates PO4 emissions from diesel fuel usage.
+
+   .. method:: elec_CO2
+
+      Calculates CO2 emissions from electricity consumption.
+
+   .. method:: elec_PO4
+
+      Calculates PO4 emissions from electricity consumption.
+
+   .. method:: fert_upstream_CO2
+
+      Estimates CO2 emissions from the production of various fertilisers.
+
+   .. method:: fert_upstream_EP
+
+      Estimates PO4 emissions from the production of various fertilisers.
+      
+
+   .. py:method:: co2_from_concentrate_production(animal)
+
+      Calculates CO2e emissions from the production of concentrates consumed by the animal cohorts.
+
+      :param animal: An object containing data about different animal cohorts and their concentrate consumption.
+      :type animal: object
+
+      :returns: The total CO2e emissions from concentrate production for all animal cohorts (kg/year).
+      :rtype: float
+
+
+   .. py:method:: po4_from_concentrate_production(animal)
+
+      Calculates phosphorus (PO4e) emissions from the production of concentrates consumed by the animal cohorts.
+
+      :param animal: An object containing data about different animal cohorts and their concentrate consumption.
+      :type animal: object
+
+      :returns: The total PO4e emissions from concentrate production for all animal cohorts (kg/year).
+      :rtype: float
+
+
+   .. py:method:: diesel_CO2(diesel_kg)
+
+      Calculates CO2e emissions from diesel consumption, including both direct and indirect upstream emissions.
+
+      :param diesel_kg: The amount of diesel consumed (kg).
+      :type diesel_kg: float
+
+      :returns: The total CO2e emissions from diesel consumption (kg).
+      :rtype: float
+
+
+   .. py:method:: diesel_PO4(diesel_kg)
+
+      Calculates phosphorus (PO4e) emissions from diesel consumption, including both direct and indirect upstream emissions.
+
+      :param diesel_kg: The amount of diesel consumed (kg).
+      :type diesel_kg: float
+
+      :returns: The total PO4e emissions from diesel consumption (kg).
+      :rtype: float
+
+
+   .. py:method:: elec_CO2(elec_kwh)
+
+      Calculates CO2e emissions from electricity consumption.
+
+      :param elec_kwh: The amount of electricity consumed (kWh).
+      :type elec_kwh: float
+
+      :returns: The total CO2e emissions from electricity consumption (kg).
+      :rtype: float
+
+
+   .. py:method:: elec_PO4(elec_kwh)
+
+      Calculates phosphorus emissions (PO4e) from electricity consumption.
+
+      :param elec_kwh: The amount of electricity consumed (kWh).
+      :type elec_kwh: float
+
+      :returns: The total PO4e emissions from electricity consumption (kg).
+      :rtype: float
+
+
+   .. py:method:: fert_upstream_CO2(total_n_fert, total_urea, total_urea_abated, total_p_fert, total_k_fert, total_lime_fert)
+
+      Calculates the total upstream CO2e emissions from the production of various fertilizers.
+
+      :param total_n_fert: Total nitrogen fertilizer applied (kg).
+      :type total_n_fert: float
+      :param total_urea: Total urea applied (kg).
+      :type total_urea: float
+      :param total_urea_abated: Total abated urea applied (kg).
+      :type total_urea_abated: float
+      :param total_p_fert: Total phosphorus fertilizer applied (kg).
+      :type total_p_fert: float
+      :param total_k_fert: Total potassium fertilizer applied (kg).
+      :type total_k_fert: float
+      :param total_lime_fert: Total lime fertilizer applied (kg).
+      :type total_lime_fert: float
+
+      :returns: The total upstream CO2e emissions from fertilizer production (kg).
+      :rtype: float
+
+
+   .. py:method:: fert_upstream_EP(total_n_fert, total_urea, total_urea_abated, total_p_fert, total_k_fert, total_lime_fert)
+
+      Calculates the total upstream emissions (PO4e) from the production of various fertilizers.
+
+      :param total_n_fert: Total nitrogen fertilizer applied (kg).
+      :type total_n_fert: float
+      :param total_urea: Total urea applied (kg).
+      :type total_urea: float
+      :param total_urea_abated: Total abated urea applied (kg).
+      :type total_urea_abated: float
+      :param total_p_fert: Total phosphorus fertilizer applied (kg).
+      :type total_p_fert: float
+      :param total_k_fert: Total potassium fertilizer applied (kg).
+      :type total_k_fert: float
+      :param total_lime_fert: Total lime fertilizer applied (kg).
+      :type total_lime_fert: float
+
+      :returns: The total upstream emissions (PO4e) from fertilizer production (kg).
+      :rtype: float
+
+
+
+.. py:class:: Allocation
+
+
+   The Allocation class is designed to compute the economic value of outputs from sheep farming activities, including the value
+   derived from lambs, sheep, and wool. It calculates the economic allocation factors for these outputs.
+
+   .. attribute:: None explicitly defined within the class but requires animal objects with specific attributes for calculations.
+
+      
+
+   .. method:: lamb_live_weight_output_value
+
+      Calculates the total economic value from the sale of lambs based on their live weight and sale price.
+
+   .. method:: sheep_live_weight_output_value
+
+      Calculates the total economic value from the sale of adult sheep based on their live weight and sale price.
+
+   .. method:: wool_output_value
+
+      Computes the total economic value from wool production.
+
+   .. method:: live_weight_bought
+
+      Calculates the total live weight of sheep and lambs bought.
+
+   .. method:: total_lamb_live_weight_kg
+
+      Sums up the total live weight of all lambs.
+
+   .. method:: total_sheep_live_weight_kg
+
+      Sums up the total live weight of all adult sheep.
+
+   .. method:: total_wool_weight_kg
+
+      Calculates the total weight of wool produced.
+
+   .. method:: lamb_allocation_factor
+
+      Determines the proportion of economic value attributed to lambs relative to total output value.
+
+   .. method:: sheep_allocation_factor
+
+      Determines the proportion of economic value attributed to adult sheep relative to total output value.
+
+   .. method:: wool_allocation_factor
+
+      Determines the proportion of economic value attributed to wool relative to total output value.
+      
+
+   .. py:method:: lamb_live_weight_output_value(animal)
+
+      Calculates the economic value of lambs based on their live weight and the market price per kilogram.
+
+      :param animal: The animal instance for which the calculation is made.
+      :type animal: Animal
+
+      :returns: Total economic value from the sale of lambs.
+      :rtype: float
+
+
+   .. py:method:: sheep_live_weight_output_value(animal)
+
+      Calculates the economic value generated of adult sheep (ewes and rams) based on their live weight and the market price per kilogram.
+
+      :param animal: The animal instance for which the calculation is made.
+      :type animal: Animal
+
+      :returns: Total economic value from the sale of adult sheep.
+      :rtype: float
+
+
+   .. py:method:: wool_output_value(animal)
+
+      Computes the total economic value derived from wool based on the quantity of wool produced and the market price per kilogram.
+
+      :param animal: The animal instance for which the calculation is made.
+      :type animal: Animal
+
+      :returns: Total economic value from wool production.
+      :rtype: float
+
+
+   .. py:method:: live_weight_bought(animal)
+
+      Calculates the total live weight of sheep and lambs bought.
+
+      :param animal: The animal instance for which the calculation is made.
+      :type animal: Animal
+
+      :returns: Total live weight of sheep and lambs bought, in kilograms.
+      :rtype: float
+
+
+   .. py:method:: total_lamb_live_weight_kg(animal)
+
+      Summarizes the total live weight of all lambs.
+
+      :param animal: The animal instance for which the calculation is made.
+      :type animal: Animal
+
+      :returns: Total live weight of lambs, in kilograms.
+      :rtype: float
+
+
+   .. py:method:: total_sheep_live_weight_kg(animal)
+
+      Computes the total live weight of adult sheep.
+
+      :param animal: The animal instance for which the calculation is made.
+      :type animal: Animal
+
+      :returns: Total live weight of adult sheep, in kilograms.
+      :rtype: float
+
+
+   .. py:method:: total_wool_weight_kg(animal)
+
+      Calculates the total weight of wool produced.
+
+      :param animal: The animal instance for which the calculation is made.
+      :type animal: Animal
+
+      :returns: Total weight of wool produced, in kilograms.
+      :rtype: float
+
+
+   .. py:method:: lamb_allocation_factor(animal)
+
+      Determines the economic allocation factor for lambs.
+
+      :param animal: The animal instance for which the calculation is made.
+      :type animal: Animal
+
+      :returns: Economic allocation factor for lambs, as a proportion of the total output value.
+      :rtype: float
+
+
+   .. py:method:: sheep_allocation_factor(animal)
+
+      Identifies the economic allocation factor for adult sheep.
+
+      :param animal: The animal instance for which the calculation is made.
+      :type animal: Animal
+
+      :returns: Economic allocation factor for adult sheep, as a proportion of the total output value.
+      :rtype: float
+
+
+   .. py:method:: wool_allocation_factor(animal)
+
+      Calculates the economic allocation factor for wool.
+
+      :param animal: The animal instance for which the calculation is made.
+      :type animal: Animal
+
+      :returns: Economic allocation factor for wool, as a proportion of the total output value.
+      :rtype: float
+
+
+
+.. py:class:: ClimateChangeTotals(ef_country)
+
+
+   This class calculates total greenhouse gas emissions associated with various farm activities
+   including enteric fermentation, manure management, soil management, and the upstream
+   impacts of fuel and feed production. It utilizes data from various other classes to
+   accumulate total emissions related to climate change.
+
+   .. attribute:: data_manager_class
+
+      Manages lifecycle assessment data.
+
+      :type: LCADataManager
+
+   .. attribute:: grass_feed_class
+
+      Manages grass feed-related calculations.
+
+      :type: GrassFeed
+
+   .. attribute:: grazing_class
+
+      Manages grazing-related calculations.
+
+      :type: GrazingStage
+
+   .. attribute:: spread_class
+
+      Manages nutrient spreading-related calculations.
+
+      :type: DailySpread
+
+   .. attribute:: housing_class
+
+      Manages housing-related calculations.
+
+      :type: HousingStage
+
+   .. attribute:: storage_class
+
+      Manages manure storage-related calculations.
+
+      :type: StorageStage
+
+   .. attribute:: fertiliser_class
+
+      Manages fertiliser input-related calculations.
+
+      :type: FertiliserInputs
+
+   .. attribute:: upstream_class
+
+      Manages upstream emissions calculations.
+
+      :type: Upstream
+
+   .. py:method:: create_emissions_dictionary(keys)
+
+      Creates a dictionary template for emissions calculations with zero-initialized values.
+
+      :param keys: List of animal cohorts or other categories for emissions calculation.
+      :type keys: list
+
+      :returns: A dictionary of dictionaries for organizing emissions data.
+      :rtype: dict
+
+
+   .. py:method:: create_expanded_emissions_dictionary(keys)
+
+      Extends the basic emissions dictionary template with additional categories for more
+      detailed emissions calculations.
+
+      :param keys: List of animal cohorts or other categories for detailed emissions calculation.
+      :type keys: list
+
+      :returns: An expanded dictionary of dictionaries for organizing detailed emissions data.
+      :rtype: dict
+
+
+   .. py:method:: Enteric_CH4(animal)
+
+      Calculates methane emissions from enteric fermentation for a given animal.
+
+      :param animal: The animal cohort for which emissions are being calculated.
+      :type animal: AnimalCategory
+
+      :returns: Total methane emissions from enteric fermentation for the specified animal (kg CH4).
+      :rtype: float
+
+
+   .. py:method:: CH4_enteric_ch4(animal)
+
+      Accumulates total methane emissions from enteric fermentation across all animal cohorts.
+
+      :param animal: Collection of animal cohorts within the farm system.
+      :type animal: AnimalCollection
+
+      :returns: Total methane emissions from enteric fermentation across all cohorts (kg CH4).
+      :rtype: float
+
+
+   .. py:method:: CH4_manure_management(animal)
+
+      Calculates methane emissions from manure management for animal cohorts.
+
+      :param animal: Collection of animal cohorts within the farm system.
+      :type animal: AnimalCollection
+
+      :returns: Total methane emissions from manure management across all cohorts (kg CH4).
+      :rtype: float
+
+
+   .. py:method:: PRP_Total(animal)
+
+      Calculates the total N2O emissions related to Pasture, Range, and Paddock (PRP) for a given animal.
+
+      :param animal: The animal cohort for which emissions are being calculated.
+      :type animal: AnimalCategory
+
+      :returns: Total N2O emissions from PRP for the specified animal.
+      :rtype: float
+
+
+   .. py:method:: Total_storage_N2O(animal)
+
+      Calculates the total N2O emissions related to the storage of manure for a given animal collection.
+
+      :param animal: The animal collection for which emissions are being calculated.
+      :type animal: AnimalCategory
+
+      :returns: Total N2O emissions from manure storage for the specified animal collection.
+      :rtype: float
+
+
+   .. py:method:: N2O_total_PRP_N2O_direct(animal)
+
+      Calculates the direct N2O emissions from pasture, range, and paddock for a given animal collection.
+
+      :param animal: The animal cohort collection for which emissions are being calculated.
+      :type animal: AnimalCategory
+
+      :returns: Direct N2O emissions from PRP for the specified animal collection.
+      :rtype: float
+
+
+   .. py:method:: N2O_total_PRP_N2O_indirect(animal)
+
+      Calculates the indirect N2O emissions from pasture, range, and paddock for a given animal collection.
+
+      :param animal: The animal cohort collection for which emissions are being calculated.
+      :type animal: AnimalCategory
+
+      :returns: Indirect N2O emissions from PRP for the specified animal collection.
+      :rtype: float
+
+
+   .. py:method:: Total_manure_ch4(animal)
+
+      Calculates the total methane emissions related to manure management for a given animal collection.
+
+      :param animal: The animal collection for which emissions are being calculated.
+      :type animal: AnimalCategory
+
+      :returns: Total methane emissions from manure management for the specified animal collection.
+      :rtype: float
+
+
+   .. py:method:: CO2_soils_GWP(total_urea, total_lime)
+
+      Calculates the global warming potential from CO2 emissions related to soil management through urea and lime application.
+
+      :param total_urea: Total amount of urea used (kg).
+      :type total_urea: float
+      :param total_lime: Total amount of lime used (kg).
+      :type total_lime: float
+
+      :returns: CO2 emissions from soil management.
+      :rtype: float
+
+
+   .. py:method:: N2O_direct_fertiliser(total_urea, total_urea_abated, total_n_fert)
+
+      Calculates the total direct N2O emissions from urea and ammonium fertilizers.
+
+      :param total_urea: Total amount of urea used (kg).
+      :type total_urea: float
+      :param total_urea_abated: Total amount of urea with emissions-reducing treatments applied (kg).
+      :type total_urea_abated: float
+      :param total_n_fert: Total amount of nitrogen fertilizer used (kg).
+      :type total_n_fert: float
+
+      :returns: Total direct N2O emissions from fertilizer application.
+      :rtype: float
+
+
+   .. py:method:: N2O_fertiliser_indirect(total_urea, total_urea_abated, total_n_fert)
+
+      Calculates the total indirect N2O emissions from urea and ammonium fertilizers.
+
+      :param total_urea: Total amount of urea used (kg).
+      :type total_urea: float
+      :param total_urea_abated: Total amount of urea with emissions-reducing treatments applied (kg).
+      :type total_urea_abated: float
+      :param total_n_fert: Total amount of nitrogen fertilizer used (kg).
+      :type total_n_fert: float
+
+      :returns: Total indirect N2O emissions from fertilizer application.
+      :rtype: float
+
+
+   .. py:method:: upstream_and_inputs_and_fuel_co2(diesel_kg, elec_kwh, total_n_fert, total_urea, total_urea_abated, total_p_fert, total_k_fert, total_lime_fert)
+
+      Calculates the total CO2 emissions from various upstream activities and inputs.
+      This includes emissions from the use of diesel, electricity, and different types of fertilizers.
+
+      Parameters:
+      - diesel_kg: The amount of diesel used, in kilograms.
+      - elec_kwh: The amount of electricity consumed, in kilowatt-hours.
+      - total_n_fert: The total amount of nitrogen fertilizer used, in kilograms.
+      - total_urea: The total amount of urea used, in kilograms.
+      - total_urea_abated: The total amount of abated urea (urea treated to reduce emissions) used, in kilograms.
+      - total_p_fert: The total amount of phosphorus fertilizer used, in kilograms.
+      - total_k_fert: The total amount of potassium fertilizer used, in kilograms.
+      - total_lime_fert: The total amount of lime fertilizer used, in kilograms.
+
+      Returns:
+      Total CO2 emissions from all specified sources, measured in equivalent kilograms of CO2.
+
+
+   .. py:method:: co2_from_concentrate_production(animal)
+
+      Calculates the CO2e emissions from the production of concentrates fed to the animal.
+      This function looks at the type and amount of concentrate feed and uses predefined emission factors to estimate the CO2e impact.
+
+      Parameters:
+      - animal: The animal collection for which the CO2e emissions are being calculated.
+      This object should contain the type and amount of concentrate feed consumed.
+
+      Returns:
+      The total CO2e emissions from the production of concentrate feed, measured in equivalent kilograms of CO2.
+
+
+
+
+.. py:class:: EutrophicationTotals(ef_country)
+
+
+   A class responsible for calculating the total eutrophication potential associated with a given farming operation.
+   This includes contributions from manure management, soil management, fertiliser application, and upstream processes
+   related to feed and fuel production.
+
+   .. attribute:: data_manager_class
+
+      An instance of the LCADataManager class to access necessary emission factors and conversion values.
+
+      :type: LCADataManager
+
+   .. attribute:: grazing_class
+
+      An instance of the GrazingStage class to access grazing-related eutrophication contributions.
+
+      :type: GrazingStage
+
+   .. attribute:: housing_class
+
+      An instance of the HousingStage class to access housing-related eutrophication contributions.
+
+      :type: HousingStage
+
+   .. attribute:: storage_class
+
+      An instance of the StorageStage class to access storage-related eutrophication contributions.
+
+      :type: StorageStage
+
+   .. attribute:: spread_class
+
+      An instance of the DailySpread class to access spreading-related eutrophication contributions.
+
+      :type: DailySpread
+
+   .. attribute:: fertiliser_class
+
+      An instance of the FertiliserInputs class to access fertiliser-related eutrophication contributions.
+
+      :type: FertiliserInputs
+
+   .. attribute:: upstream_class
+
+      An instance of the Upstream class to access upstream-related eutrophication contributions.
+
+      :type: Upstream
+
+   .. method:: create_emissions_dictionary(keys)
+
+      Creates a structured dictionary for tracking eutrophication emissions.
+
+   .. method:: create_expanded_emissions_dictionary(keys)
+
+      Creates a more detailed structured dictionary for tracking eutrophication emissions, including upstream processes.
+
+   .. method:: total_manure_NH3_EP(animal)
+
+      Calculates the total ammonia emissions from manure management, converted to phosphate equivalents.
+
+   .. method:: total_fertiliser_soils_NH3_and_LEACH_EP(total_urea, total_urea_abated, total_n_fert)
+
+      Calculates total ammonia and leaching from fertiliser application to soils, converted to phosphate equivalents.
+
+   .. method:: total_grazing_soils_NH3_and_LEACH_EP(animal)
+
+      Calculates total ammonia and leaching from grazing management to soils, converted to phosphate equivalents.
+
+   .. method:: fertiliser_soils_P_LEACH_EP(total_urea, total_urea_abated, total_n_fert, total_p_fert)
+
+      Calculates total phosphorus leaching from fertiliser application, contributing to eutrophication.
+
+   .. method:: grazing_soils_P_LEACH_EP(animal)
+
+      Calculates total phosphorus leaching from grazing, contributing to eutrophication.
+
+   .. method:: total_fertilser_soils_EP(total_urea, total_urea_abated, total_n_fert, total_p_fert)
+
+      Aggregates total eutrophication potential from fertiliser applications to soils.
+
+   .. method:: total_grazing_soils_EP(animal)
+
+      Aggregates total eutrophication potential from grazing management.
+
+   .. method:: upstream_and_inputs_and_fuel_po4(diesel_kg, elec_kwh, total_n_fert, total_urea, total_urea_abated, total_p_fert, total_k_fert, total_lime_fert)
+
+      Calculates total eutrophication potential from upstream activities and inputs, including fuel and electricity usage.
+
+   .. method:: po4_from_concentrate_production(animal)
+
+      Calculates total phosphorus emissions from concentrate production used in animal diets.
+      
+
+   .. py:method:: create_emissions_dictionary(keys)
+
+      Creates a dictionary to store eutrophication emissions data for different categories.
+
+      :param keys: A list of keys representing different farm activities or emission sources.
+
+      :returns: A dictionary with initialized values for each key and sub-key.
+
+
+   .. py:method:: create_expanded_emissions_dictionary(keys)
+
+      Creates an expanded dictionary to store detailed eutrophication emissions data.
+
+      :param keys: A list of keys representing different farm activities or emission sources.
+
+      :returns: An expanded dictionary with initialized values for each category and sub-category.
+
+
+   .. py:method:: total_manure_NH3_EP(animal)
+
+      Calculates total ammonia emissions from manure, converted to equivalent phosphorus, contributing to eutrophication potential.
+
+      :param animal: Animal data object containing manure emission details.
+
+      :returns: Total ammonia emissions from manure management converted to phosphorus equivalent.
+
+
+   .. py:method:: total_fertiliser_soils_NH3_and_LEACH_EP(total_urea, total_urea_abated, total_n_fert)
+
+      Calculates total ammonia and leaching emissions from fertilizer application, converted to phosphorus equivalent.
+
+      :param total_urea: Total amount of urea applied.
+      :param total_urea_abated: Total amount of urea with abatement measures applied.
+      :param total_n_fert: Total amount of nitrogen fertilizers applied.
+
+      :returns: Total ammonia and leaching emissions from fertilizers, converted to phosphorus equivalent.
+
+
+   .. py:method:: total_grazing_soils_NH3_and_LEACH_EP(animal)
+
+      Calculates total ammonia and leaching emissions from grazing soils, converted to phosphorus equivalent.
+
+      :param animal: Animal data object containing grazing information.
+
+      :returns: Total ammonia and leaching emissions from grazing, converted to phosphorus equivalent.
+
+      .. note:: Spreading not included for sheep.
+
+
+   .. py:method:: fertiliser_soils_P_LEACH_EP(total_urea, total_urea_abated, total_n_fert, total_p_fert)
+
+      Calculates phosphorus leaching from fertilizer application on soils.
+
+      :param total_urea: Total amount of urea applied.
+      :param total_urea_abated: Total amount of urea with abatement measures applied.
+      :param total_n_fert: Total amount of nitrogen fertilizers applied.
+      :param total_p_fert: Total amount of phosphorus fertilizers applied.
+
+      :returns: Total phosphorus leaching from fertilizers application.
+
+
+   .. py:method:: grazing_soils_P_LEACH_EP(animal)
+
+      Calculates phosphorus leaching from grazing soils.
+
+      :param animal: Animal data object containing grazing information.
+
+      :returns: Total phosphorus leaching from grazing activities.
+
+
+   .. py:method:: total_fertilser_soils_EP(total_urea, total_urea_abated, total_n_fert, total_p_fert)
+
+      Calculates total eutrophication potential from fertilizer application on soils.
+
+      :param total_urea: Amounts of different fertilizers applied.
+      :param total_urea_abated: Amounts of different fertilizers applied.
+      :param total_n_fert: Amounts of different fertilizers applied.
+      :param total_p_fert: Amounts of different fertilizers applied.
+
+      :returns: Total eutrophication potential from fertilizer application.
+
+
+   .. py:method:: total_grazing_soils_EP(animal)
+
+      Calculates total eutrophication potential from grazing soils.
+
+      :param animal: Animal data object containing grazing information.
+
+      :returns: Total eutrophication potential from grazing activities.
+
+
+   .. py:method:: upstream_and_inputs_and_fuel_po4(diesel_kg, elec_kwh, total_n_fert, total_urea, total_urea_abated, total_p_fert, total_k_fert, total_lime_fert)
+
+      Calculates total phosphorus emissions from upstream activities, inputs, and fuel related to livestock production.
+
+      :param diesel_kg: Quantities of inputs used.
+      :param elec_kwh: Quantities of inputs used.
+      :param total_n_fert: Quantities of inputs used.
+      :param total_urea: Quantities of inputs used.
+      :param total_urea_abated: Quantities of inputs used.
+      :param total_p_fert: Quantities of inputs used.
+      :param total_k_fert: Quantities of inputs used.
+      :param total_lime_fert: Quantities of inputs used.
+
+      :returns: Total phosphorus emissions from upstream activities.
+
+
+   .. py:method:: po4_from_concentrate_production(animal)
+
+      Calculates the total phosphorus emissions (PO4 equivalent) resulting from the production of concentrate feeds used in animal diet.
+      This method considers the entire lifecycle of concentrate production including the acquisition of raw materials, processing, and transportation.
+
+      :param animal: An object representing the animal cohort, containing data related to the type and amount of concentrate consumed.
+
+      :returns: The total phosphorus emissions (PO4 equivalent) from concentrate production for the given animal cohort over a specified period, contributing to the eutrophication potential of the system.
+
+
+
+.. py:class:: AirQualityTotals(ef_country)
+
+
+   This class calculates the total ammonia (NH3) emissions contributing to air quality impacts from various
+   farm management practices including manure management, soil management, and fertilization strategies.
+   The calculations are based on the lifecycle of animal cohorts and their feed, manure handling practices, as well as fertiliser application rates.
+
+   .. attribute:: data_manager_class
+
+      A class instance that provides access to necessary emission factors and data specific to a given country or region.
+
+      :type: LCADataManager
+
+   .. attribute:: grazing_class
+
+      A class instance to calculate emissions from grazing practices.
+
+      :type: GrazingStage
+
+   .. attribute:: housing_class
+
+      A class instance to calculate emissions from animal housing practices.
+
+      :type: HousingStage
+
+   .. attribute:: storage_class
+
+      A class instance to calculate emissions from manure storage practices.
+
+      :type: StorageStage
+
+   .. attribute:: spread_class
+
+      A class instance to calculate emissions from manure spreading practices.
+
+      :type: DailySpread
+
+   .. attribute:: fertiliser_class
+
+      A class instance to calculate emissions from fertiliser application.
+
+      :type: FertiliserInputs
+
+   .. py:method:: create_emissions_dictionary(keys)
+
+      Creates a nested dictionary structure to store NH3 emission values from various sources categorized by specific keys (e.g., animal types).
+
+      :param keys: A list of string keys representing different emission categories or animal types.
+      :type keys: list
+
+      :returns: A nested dictionary structured to hold emission values.
+      :rtype: dict
+
+
+   .. py:method:: total_manure_NH3_AQ(animal)
+
+      Calculates total NH3 emissions from manure management practices for the specified animal collection.
+
+      :param animal: An instance representing a specific animal collection.
+      :type animal: Animal
+
+      :returns: Total NH3 emissions (kg) from manure management for the specified animal collection.
+      :rtype: float
+
+
+   .. py:method:: total_fertiliser_soils_NH3_AQ(total_urea, total_urea_abated, total_n_fert)
+
+      Calculates total NH3 emissions from fertiliser application to soils.
+
+      :param total_urea: Total urea fertiliser applied (kg).
+      :type total_urea: float
+      :param total_urea_abated: Total abated urea fertiliser applied (kg).
+      :type total_urea_abated: float
+      :param total_n_fert: Total nitrogen fertiliser applied (kg).
+      :type total_n_fert: float
+
+      :returns: Total NH3 emissions (kg) from fertiliser application to soils.
+      :rtype: float
+
+
+   .. py:method:: total_grazing_soils_NH3_AQ(animal)
+
+      Calculates total NH3 emissions from soils during grazing for the specified animal collection.
+
+      :param animal: An instance representing a specific animal collection.
+      :type animal: Animal
+
+      :returns: Total NH3 emissions (kg) from soils during grazing for the specified animal collection.
+      :rtype: float
+
+
+

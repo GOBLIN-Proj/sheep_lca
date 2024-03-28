@@ -53,7 +53,7 @@ pip install "sheep_lca@git+https://github.com/GOBLIN-Proj/sheep_lca.git@main"
 ## Usage
 ```python
 import pandas as pd
-from sheep_lca.models import load_livestock_data, load_farm_data
+from sheep_lca.resource_manager.models import load_livestock_data, load_farm_data
 from sheep_lca.lca import ClimateChangeTotals
 
 
