@@ -42,6 +42,11 @@ Install from git hub.
 pip install "sheep_lca@git+https://github.com/GOBLIN-Proj/sheep_lca.git@main" 
 
 ```
+Install from PyPI
+
+```bash
+pip install sheep_lca
+```
 
 ## Usage
 ```python
