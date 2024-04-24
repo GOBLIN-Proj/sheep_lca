@@ -18,7 +18,7 @@ You can install the package using pip:
 
 ```bash
 
-    pip install cattle_lca
+    pip install sheep_lca
 ```
 
 Install from Source
@@ -26,7 +26,7 @@ Install from Source
 To install from source using pip and git:
 
 ```bash
-    pip install git+https://github.com/GOBLIN-Proj/cattle_lca.git@main
+    pip install git+https://github.com/GOBLIN-Proj/sheep_lca.git@main
 ```
 
 
